@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Learning Management System - Experiment 7</title>
+    <style>
+        :root {
+            --primary: #1e1b4b;
+            --secondary: #4f46e5;
+            --accent: #e11d48;
+            --success: #16a34a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover { background-color: #be123c; }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-info { background-color: var(--secondary); }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .course-card {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            width: 100%;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <h1>EduPortal LMS</h1>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome, Student</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Student Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Instructor / Admin</button>
+                    </div>
+
+                    <!-- Student Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Student Portal Login</h2>
+                        <div class="form-group">
+                            <label>Student Email / Username</label>
+                            <input type="text" id="login-username" placeholder="student@edu.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Login to Dashboard</button>
+                    </form>
+
+                    <!-- Student Register -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Student Registration</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="reg-name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="reg-email" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Create Student Account</button>
+                    </form>
+
+                    <!-- Admin Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Instructor Login</h2>
+                        <div class="form-group">
+                            <label>Instructor ID</label>
+                            <input type="text" id="login-admin-name" placeholder="admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--primary);">Login as Instructor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. STUDENT DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchUserTab('courses')">Available Courses</button> |
+                <button onclick="switchUserTab('my-learning')">My Enrolled Courses</button> |
+                <button onclick="switchUserTab('assignments')">Assignments & Assessments</button>
+            </div>
+
+            <!-- TAB: COURSE CATALOG -->
+            <div id="user-tab-courses">
+                <div class="card">
+                    <h2>Explore Courses</h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <input type="text" id="search-course" placeholder="Search course title or instructor..." onkeyup="filterCourses()">
+                        </div>
+                        <div class="form-group">
+                            <select id="filter-category" onchange="filterCourses()">
+                                <option value="All">All Categories</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Cyber Security">Cyber Security</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-3" id="courses-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB: MY ENROLLED COURSES & PROGRESS -->
+            <div id="user-tab-my-learning" style="display: none;">
+                <div class="card">
+                    <h2>My Learning & Progress Track</h2>
+                    <div id="enrolled-courses-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: ASSIGNMENTS -->
+            <div id="user-tab-assignments" style="display: none;">
+                <div class="card">
+                    <h2>Pending & Completed Assignments</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Assignment Title</th>
+                                <th>Course</th>
+                                <th>Due Date</th>
+                                <th>Submission Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-assignments-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. INSTRUCTOR / ADMIN DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchAdminTab('create-course')">Manage Courses & Lessons</button> |
+                <button onclick="switchAdminTab('add-assignment')">Create Assignment</button> |
+                <button onclick="switchAdminTab('submissions')">Review Submissions</button>
+            </div>
+
+            <!-- TAB: MANAGE COURSES -->
+            <div id="admin-tab-create-course">
+                <div class="card">
+                    <h2>Add New Course</h2>
+                    <form onsubmit="saveCourse(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Course Title</label>
+                                <input type="text" id="adm-course-title" required placeholder="Mastering Node.js">
+                            </div>
+                            <div class="form-group">
+                                <label>Instructor Name</label>
+                                <input type="text" id="adm-course-instructor" required placeholder="Prof. Alan Turing">
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="adm-course-category">
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Cyber Security">Cyber Security</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Lessons Count</label>
+                                <input type="number" id="adm-course-lessons" required placeholder="10">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Publish Course</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: CREATE ASSIGNMENT -->
+            <div id="admin-tab-add-assignment" style="display: none;">
+                <div class="card">
+                    <h2>Create Course Assignment</h2>
+                    <form onsubmit="saveAssignment(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Select Course</label>
+                                <select id="adm-assign-course">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Assignment Title</label>
+                                <input type="text" id="adm-assign-title" required placeholder="Lab Assignment 1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Due Date</label>
+                            <input type="date" id="adm-assign-date" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Assignment</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: REVIEW SUBMISSIONS -->
+            <div id="admin-tab-submissions" style="display: none;">
+                <div class="card">
+                    <h2>Student Submissions Ledger</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Assignment</th>
+                                <th>Student</th>
+                                <th>Submitted Content</th>
+                                <th>Grade Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-submissions-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Data Models
+        let currentUser = null;
+
+        let courses = [
+            { id: 1, title: 'Full Stack Web Development', instructor: 'Dr. Sarah Connor', category: 'Web Development', lessons: 12, enrolled: false, progress: 0 },
+            { id: 2, title: 'Data Science & Machine Learning', instructor: 'Prof. Andrew Ng', category: 'Data Science', lessons: 15, enrolled: false, progress: 0 },
+            { id: 3, title: 'Cyber Security Fundamentals', instructor: 'Kevin Mitnick', category: 'Cyber Security', lessons: 8, enrolled: false, progress: 0 }
+        ];
+
+        let assignments = [
+            { id: 101, courseId: 1, title: 'Build a Responsive Dashboard', due: '2026-09-01', submitted: false, studentContent: '' },
+            { id: 102, courseId: 2, title: 'Linear Regression Analysis', due: '2026-09-10', submitted: false, studentContent: '' }
+        ];
+
+        let submissions = [];
+
+        // Navigation
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('user-tab-courses').style.display = 'none';
+            document.getElementById('user-tab-my-learning').style.display = 'none';
+            document.getElementById('user-tab-assignments').style.display = 'none';
+
+            if (tab === 'courses') document.getElementById('user-tab-courses').style.display = 'block';
+            if (tab === 'my-learning') document.getElementById('user-tab-my-learning').style.display = 'block';
+            if (tab === 'assignments') document.getElementById('user-tab-assignments').style.display = 'block';
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-create-course').style.display = 'none';
+            document.getElementById('admin-tab-add-assignment').style.display = 'none';
+            document.getElementById('admin-tab-submissions').style.display = 'none';
+
+            if (tab === 'create-course') document.getElementById('admin-tab-create-course').style.display = 'block';
+            if (tab === 'add-assignment') {
+                document.getElementById('admin-tab-add-assignment').style.display = 'block';
+                populateCourseDropdown();
+            }
+            if (tab === 'submissions') document.getElementById('admin-tab-submissions').style.display = 'block';
+        }
+
+        // Authentication
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const name = document.getElementById('login-username').value || "Student";
+                currentUser = { name: name, role: 'Student' };
+                document.getElementById('user-display-name').textContent = `Student: ${currentUser.name}`;
+                renderStudentViews();
+                showView('view-user-dashboard');
+            } else {
+                const adminName = document.getElementById('login-admin-name').value || "Instructor";
+                currentUser = { name: adminName, role: 'Instructor' };
+                document.getElementById('user-display-name').textContent = `Instructor: ${currentUser.name}`;
+                renderAdminViews();
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Student Registration Successful! Please Login.');
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Student Views Logic
+        function renderStudentViews() {
+            renderCourseGrid(courses);
+            renderEnrolledCourses();
+            renderAssignments();
+        }
+
+        function renderCourseGrid(list) {
+            const grid = document.getElementById('courses-grid');
+            grid.innerHTML = '';
+
+            list.forEach(c => {
+                grid.innerHTML += `
+                    <div class="course-card">
+                        <div>
+                            <span class="badge badge-info" style="margin-bottom:0.5rem; display:inline-block;">${c.category}</span>
+                            <h3 style="border:none; margin-bottom:0.3rem;">${c.title}</h3>
+                            <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Instructor: ${c.instructor}</p>
+                            <p style="font-size:0.85rem;">Lessons: ${c.lessons}</p>
+                        </div>
+                        <div style="margin-top:1rem;">
+                            <button class="btn-submit" onclick="enrollCourse(${c.id})" ${c.enrolled ? 'disabled style="background-color:#94a3b8;"' : ''}>
+                                ${c.enrolled ? 'Enrolled' : 'Enroll Now'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterCourses() {
+            const kw = document.getElementById('search-course').value.toLowerCase();
+            const cat = document.getElementById('filter-category').value;
+
+            const filtered = courses.filter(c => {
+                const matchKw = c.title.toLowerCase().includes(kw) || c.instructor.toLowerCase().includes(kw);
+                const matchCat = (cat === 'All') || (c.category === cat);
+                return matchKw && matchCat;
+            });
+
+            renderCourseGrid(filtered);
+        }
+
+        function enrollCourse(id) {
+            const course = courses.find(c => c.id === id);
+            course.enrolled = true;
+            alert(`Successfully enrolled in "${course.title}"!`);
+            renderStudentViews();
+        }
+
+        function renderEnrolledCourses() {
+            const container = document.getElementById('enrolled-courses-list');
+            container.innerHTML = '';
+
+            const enrolledList = courses.filter(c => c.enrolled);
+
+            if (enrolledList.length === 0) {
+                container.innerHTML = '<p style="color:#64748b;">You have not enrolled in any courses yet.</p>';
+                return;
+            }
+
+            enrolledList.forEach(c => {
+                const percent = Math.round((c.progress / c.lessons) * 100);
+                container.innerHTML += `
+                    <div style="border:1px solid var(--border); padding:1rem; border-radius:6px; margin-bottom:1rem;">
+                        <div style="display:flex; justify-shadow:space-between; justify-content:space-between; align-items:center;">
+                            <strong>${c.title}</strong>
+                            <span>${c.progress} / ${c.lessons} Lessons Completed (${percent}%)</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${percent}%;"></div>
+                        </div>
+                        <button onclick="completeLesson(${c.id})" style="background-color:var(--secondary); color:white; border:none; padding:0.4rem 0.8rem; border-radius:4px; cursor:pointer; margin-top:0.5rem;" ${c.progress >= c.lessons ? 'disabled' : ''}>
+                            ${c.progress >= c.lessons ? 'Course Completed!' : 'Mark Next Lesson Complete'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function completeLesson(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (course && course.progress < course.lessons) {
+                course.progress++;
+                renderEnrolledCourses();
+            }
+        }
+
+        function renderAssignments() {
+            const tbody = document.getElementById('student-assignments-table');
+            tbody.innerHTML = '';
+
+            assignments.forEach(a => {
+                const course = courses.find(c => c.id === a.courseId);
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${a.title}</strong></td>
+                        <td>${course ? course.title : 'General'}</td>
+                        <td>${a.due}</td>
+                        <td><span class="badge ${a.submitted ? 'badge-success' : 'badge-info'}">${a.submitted ? 'Submitted' : 'Pending'}</span></td>
+                        <td>
+                            ${a.submitted ? '<em>Submitted</em>' : `<button onclick="submitAssignment(${a.id})" style="background-color:var(--success); color:white; border:none; padding:0.3rem 0.6rem; border-radius:4px; cursor:pointer;">Submit Work</button>`}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function submitAssignment(assignId) {
+            const content = prompt('Enter text submission or URL link for assignment:');
+            if (content) {
+                const assign = assignments.find(a => a.id === assignId);
+                assign.submitted = true;
+                assign.studentContent = content;
+
+                submissions.push({
+                    title: assign.title,
+                    student: currentUser.name,
+                    content: content
+                });
+
+                alert('Assignment submitted successfully!');
+                renderStudentViews();
+            }
+        }
+
+        // Admin Logic
+        function renderAdminViews() {
+            renderSubmissions();
+        }
+
+        function saveCourse(e) {
+            e.preventDefault();
+            const title = document.getElementById('adm-course-title').value;
+            const instructor = document.getElementById('adm-course-instructor').value;
+            const category = document.getElementById('adm-course-category').value;
+            const lessons = parseInt(document.getElementById('adm-course-lessons').value);
+
+            courses.push({
+                id: courses.length + 1,
+                title, instructor, category, lessons, enrolled: false, progress: 0
+            });
+
+            alert('Course published successfully!');
+            renderStudentViews();
+        }
+
+        function populateCourseDropdown() {
+            const select = document.getElementById('adm-assign-course');
+            select.innerHTML = '';
+            courses.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.title}</option>`;
+            });
+        }
+
+        function saveAssignment(e) {
+            e.preventDefault();
+            const courseId = parseInt(document.getElementById('adm-assign-course').value);
+            const title = document.getElementById('adm-assign-title').value;
+            const due = document.getElementById('adm-assign-date').value;
+
+            assignments.push({
+                id: assignments.length + 101,
+                courseId, title, due, submitted: false, studentContent: ''
+            });
+
+            alert('Assignment created successfully!');
+            renderStudentViews();
+        }
+
+        function renderSubmissions() {
+            const tbody = document.getElementById('admin-submissions-table');
+            tbody.innerHTML = '';
+
+            submissions.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${s.title}</strong></td>
+                        <td>${s.student}</td>
+                        <td>${s.content}</td>
+                        <td><span class="badge badge-success">Reviewed</span></td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

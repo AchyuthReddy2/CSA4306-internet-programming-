@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Book Store - Experiment 6</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #2563eb;
+            --accent: #ef4444;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover { background-color: #b91c1c; }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-danger { background-color: var(--accent); }
+        .btn-danger:hover { background-color: #dc2626; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-danger { background-color: var(--accent); }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .book-card {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .book-author {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--success);
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <h1>BookHaven Online Store</h1>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome, Guest</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Customer Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Admin Portal</button>
+                    </div>
+
+                    <!-- Customer Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">User Login</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-email" placeholder="user@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Login & Shop</button>
+                    </form>
+
+                    <!-- User Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">New User Registration</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="reg-name" required placeholder="Alice Smith">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="reg-email" required placeholder="alice@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Register Account</button>
+                    </form>
+
+                    <!-- Admin Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Admin Login</h2>
+                        <div class="form-group">
+                            <label>Admin ID</label>
+                            <input type="text" id="login-admin-name" placeholder="admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--primary);">Login as Admin</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CUSTOMER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchUserTab('catalog')">Book Catalog</button> |
+                <button onclick="switchUserTab('cart')">Shopping Cart (<span id="cart-count">0</span>)</button> |
+                <button onclick="switchUserTab('orders')">Order History</button>
+            </div>
+
+            <!-- TAB: BOOK CATALOG -->
+            <div id="user-tab-catalog">
+                <div class="card">
+                    <h2>Search Books</h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <input type="text" id="search-keyword" placeholder="Search by title, author, or ISBN..." onkeyup="filterBooks()">
+                        </div>
+                        <div class="form-group">
+                            <select id="search-category" onchange="filterBooks()">
+                                <option value="All">All Categories</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Fiction">Fiction</option>
+                                <option value="Business">Business</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-3" id="books-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB: SHOPPING CART & CHECKOUT -->
+            <div id="user-tab-cart" style="display: none;">
+                <div class="card">
+                    <h2>Your Shopping Cart</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+
+                    <div style="text-align: right; margin-top: 1.5rem;">
+                        <h3>Total Amount: <span id="cart-total-price" style="color:var(--success);">$0.00</span></h3>
+                    </div>
+                </div>
+
+                <div class="card" id="checkout-section">
+                    <h2>Checkout & Payment Gateway</h2>
+                    <form onsubmit="processCheckout(event)">
+                        <div class="form-group">
+                            <label>Shipping Address</label>
+                            <textarea id="ship-address" rows="2" placeholder="Enter delivery address..." required></textarea>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Payment Method</label>
+                                <select id="payment-method">
+                                    <option value="Credit/Debit Card">Credit / Debit Card</option>
+                                    <option value="UPI / NetBanking">UPI / NetBanking</option>
+                                    <option value="Cash on Delivery">Cash on Delivery</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Card / Account Number</label>
+                                <input type="text" placeholder="•••• •••• •••• 1234" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--success);">Place Order</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: ORDER HISTORY -->
+            <div id="user-tab-orders" style="display: none;">
+                <div class="card">
+                    <h2>My Past Orders</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Items</th>
+                                <th>Total Paid</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-orders-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchAdminTab('inventory')">Manage Book Inventory</button> |
+                <button onclick="switchAdminTab('orders-all')">Manage All Orders</button>
+            </div>
+
+            <!-- TAB: INVENTORY MANAGEMENT -->
+            <div id="admin-tab-inventory">
+                <div class="card">
+                    <h2>Add / Update Book</h2>
+                    <form onsubmit="saveBook(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Book Title</label>
+                                <input type="text" id="adm-book-title" required placeholder="Clean Code">
+                            </div>
+                            <div class="form-group">
+                                <label>Author</label>
+                                <input type="text" id="adm-book-author" required placeholder="Robert C. Martin">
+                            </div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="adm-book-category">
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Fiction">Fiction</option>
+                                    <option value="Business">Business</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Price ($)</label>
+                                <input type="number" id="adm-book-price" step="0.01" required placeholder="39.99">
+                            </div>
+                            <div class="form-group">
+                                <label>Stock Quantity</label>
+                                <input type="number" id="adm-book-stock" required placeholder="15">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Book to Inventory</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Current Inventory</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-inventory-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: MANAGE ORDERS -->
+            <div id="admin-tab-orders-all" style="display: none;">
+                <div class="card">
+                    <h2>All Customer Orders</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Data Stores
+        let currentUser = null;
+
+        let booksList = [
+            { id: 1, title: 'JavaScript: The Good Parts', author: 'Douglas Crockford', category: 'Computer Science', price: 29.99, stock: 10, desc: 'Unearthing the elegant features of JavaScript.' },
+            { id: 2, title: 'Design Patterns', author: 'Erich Gamma et al.', category: 'Computer Science', price: 45.50, stock: 8, desc: 'Elements of Reusable Object-Oriented Software.' },
+            { id: 3, title: 'The Lean Startup', author: 'Eric Ries', category: 'Business', price: 22.00, stock: 15, desc: 'How Constant Innovation Creates Radically Successful Businesses.' }
+        ];
+
+        let cart = [];
+
+        let ordersList = [
+            { id: 'ORD1001', user: 'Alice Smith', items: 'JavaScript: The Good Parts (1)', total: 29.99, payment: 'Credit/Debit Card', status: 'Delivered' }
+        ];
+
+        // UI View Switchers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('user-tab-catalog').style.display = 'none';
+            document.getElementById('user-tab-cart').style.display = 'none';
+            document.getElementById('user-tab-orders').style.display = 'none';
+
+            if (tab === 'catalog') document.getElementById('user-tab-catalog').style.display = 'block';
+            if (tab === 'cart') document.getElementById('user-tab-cart').style.display = 'block';
+            if (tab === 'orders') document.getElementById('user-tab-orders').style.display = 'block';
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-inventory').style.display = 'none';
+            document.getElementById('admin-tab-orders-all').style.display = 'none';
+
+            if (tab === 'inventory') document.getElementById('admin-tab-inventory').style.display = 'block';
+            if (tab === 'orders-all') document.getElementById('admin-tab-orders-all').style.display = 'block';
+        }
+
+        // Authentication Handlers
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-email').value || "user@example.com";
+                currentUser = { name: "Alice Smith", email: email, role: 'Customer' };
+                document.getElementById('user-display-name').textContent = `Customer: ${currentUser.name}`;
+                renderUserViews();
+                showView('view-user-dashboard');
+            } else {
+                const adminName = document.getElementById('login-admin-name').value || "Admin";
+                currentUser = { name: adminName, role: 'Admin' };
+                document.getElementById('user-display-name').textContent = `Admin: ${currentUser.name}`;
+                renderAdminViews();
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            alert(`Account registered successfully for ${name}! Please login.`);
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Customer Store Functions
+        function renderUserViews() {
+            renderBooksGrid(booksList);
+            renderCart();
+            renderUserOrders();
+        }
+
+        function renderBooksGrid(list) {
+            const grid = document.getElementById('books-grid');
+            grid.innerHTML = '';
+
+            list.forEach(book => {
+                grid.innerHTML += `
+                    <div class="book-card">
+                        <div>
+                            <div class="book-title">${book.title}</div>
+                            <div class="book-author">by ${book.author}</div>
+                            <span class="badge badge-success" style="background-color: var(--secondary);">${book.category}</span>
+                            <p style="font-size:0.85rem; margin-top:0.5rem;">${book.desc}</p>
+                        </div>
+                        <div>
+                            <div class="book-price">$${book.price.toFixed(2)}</div>
+                            <p style="font-size:0.8rem; margin-bottom:0.5rem; color:#64748b;">In Stock: ${book.stock}</p>
+                            <button class="btn-submit" onclick="addToCart(${book.id})" ${book.stock <= 0 ? 'disabled style="opacity:0.5;"' : ''}>
+                                ${book.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterBooks() {
+            const keyword = document.getElementById('search-keyword').value.toLowerCase();
+            const category = document.getElementById('search-category').value;
+
+            const filtered = booksList.filter(b => {
+                const matchesKeyword = b.title.toLowerCase().includes(keyword) || b.author.toLowerCase().includes(keyword);
+                const matchesCategory = (category === 'All') || (b.category === category);
+                return matchesKeyword && matchesCategory;
+            });
+
+            renderBooksGrid(filtered);
+        }
+
+        function addToCart(bookId) {
+            const book = booksList.find(b => b.id === bookId);
+            const cartItem = cart.find(c => c.bookId === bookId);
+
+            if (cartItem) {
+                if (cartItem.qty + 1 > book.stock) {
+                    alert('Cannot add more. Reached stock limit!');
+                    return;
+                }
+                cartItem.qty++;
+            } else {
+                cart.push({ bookId: book.id, title: book.title, price: book.price, qty: 1 });
+            }
+
+            alert(`Added "${book.title}" to cart.`);
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cart-table-body');
+            tbody.innerHTML = '';
+            let total = 0;
+            let itemCount = 0;
+
+            cart.forEach((item, index) => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                itemCount += item.qty;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.title}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>${item.qty}</td>
+                        <td>$${subtotal.toFixed(2)}</td>
+                        <td><button onclick="removeFromCart(${index})" class="btn-danger" style="padding:0.3rem 0.5rem; border:none; color:white; border-radius:4px; cursor:pointer;">Remove</button></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('cart-count').textContent = itemCount;
+            document.getElementById('cart-total-price').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function processCheckout(e) {
+            e.preventDefault();
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const itemsSummary = cart.map(i => `${i.title} (${i.qty})`).join(', ');
+            const payMethod = document.getElementById('payment-method').value;
+
+            // Update stocks
+            cart.forEach(item => {
+                const b = booksList.find(book => book.id === item.bookId);
+                if (b) b.stock -= item.qty;
+            });
+
+            const newOrder = {
+                id: 'ORD' + Math.floor(1000 + Math.random() * 9000),
+                user: currentUser.name,
+                items: itemsSummary,
+                total: totalAmount,
+                payment: payMethod,
+                status: 'Processing'
+            };
+
+            ordersList.push(newOrder);
+            cart = [];
+            alert(`Order placed successfully!\nOrder ID: ${newOrder.id}`);
+
+            renderUserViews();
+            switchUserTab('orders');
+        }
+
+        function renderUserOrders() {
+            const tbody = document.getElementById('user-orders-table');
+            tbody.innerHTML = '';
+            const myOrders = ordersList.filter(o => o.user === currentUser.name);
+
+            myOrders.forEach(o => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${o.id}</td>
+                        <td>${o.items}</td>
+                        <td>$${o.total.toFixed(2)}</td>
+                        <td>${o.payment}</td>
+                        <td><span class="badge badge-success">${o.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Admin Store Functions
+        function renderAdminViews() {
+            const invTbody = document.getElementById('admin-inventory-table');
+            invTbody.innerHTML = '';
+            booksList.forEach(b => {
+                invTbody.innerHTML += `
+                    <tr>
+                        <td><strong>${b.title}</strong></td>
+                        <td>${b.author}</td>
+                        <td>${b.category}</td>
+                        <td>$${b.price.toFixed(2)}</td>
+                        <td>${b.stock}</td>
+                    </tr>
+                `;
+            });
+
+            const ordTbody = document.getElementById('admin-orders-table');
+            ordTbody.innerHTML = '';
+            ordersList.forEach(o => {
+                ordTbody.innerHTML += `
+                    <tr>
+                        <td>${o.id}</td>
+                        <td>${o.user}</td>
+                        <td>$${o.total.toFixed(2)}</td>
+                        <td>${o.payment}</td>
+                        <td><span class="badge badge-success">${o.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function saveBook(e) {
+            e.preventDefault();
+            const title = document.getElementById('adm-book-title').value;
+            const author = document.getElementById('adm-book-author').value;
+            const category = document.getElementById('adm-book-category').value;
+            const price = parseFloat(document.getElementById('adm-book-price').value);
+            const stock = parseInt(document.getElementById('adm-book-stock').value);
+
+            booksList.push({
+                id: booksList.length + 1,
+                title, author, category, price, stock, desc: 'Added by Admin.'
+            });
+
+            alert('New book added to store catalog!');
+            renderUserViews();
+            renderAdminViews();
+        }
+    </script>
+</body>
+</html>
