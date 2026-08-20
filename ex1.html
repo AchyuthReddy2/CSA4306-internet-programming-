@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Library Management System - Exp 1</title>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #34495e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f7f6; color: #333; }
+    header { background: var(--primary); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .auth-card { max-width: 450px; margin: 3rem auto; background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+    h2, h3 { margin-bottom: 1rem; color: var(--primary); border-bottom: 2px solid var(--light); padding-bottom: 0.5rem; }
+    form { display: grid; gap: 1rem; margin-bottom: 1rem; }
+    .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    input, select, button { padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; width: 100%; }
+    button { background: var(--secondary); color: white; border: none; cursor: pointer; font-weight: bold; }
+    button:hover { opacity: 0.9; }
+    button.btn-danger { background: var(--danger); }
+    button.btn-secondary { background: #7f8c8d; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background-color: var(--light); color: var(--dark); }
+    .hidden { display: none; }
+    .badge { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: white; }
+    .bg-success { background: var(--success); }
+    .bg-danger { background: var(--danger); }
+    .auth-toggle { text-align: center; margin-top: 1rem; font-size: 0.9rem; }
+    .auth-toggle a { color: var(--secondary); text-decoration: underline; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <h1>SSE Library Portal</h1>
+    <div id="header-user-info" class="hidden">
+      <span id="user-display"></span>
+      <button onclick="logout()" class="btn-secondary" style="padding: 0.3rem 0.8rem; margin-left: 10px; width: auto;">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ==================== AUTHENTICATION SECTION ==================== -->
+    <div id="auth-section">
+      <!-- LOGIN FORM -->
+      <div id="login-card" class="auth-card">
+        <h2>Login Portal</h2>
+        <form id="login-form">
+          <div>
+            <label>Role</label>
+            <select id="login-role">
+              <option value="student">Student</option>
+              <option value="admin">Librarian Admin</option>
+            </select>
+          </div>
+          <div>
+            <label>Username / Email</label>
+            <input type="text" id="login-username" placeholder="Enter username" required />
+          </div>
+          <div>
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter password" required />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+        <div class="auth-toggle">
+          Don't have a student account? <a onclick="toggleAuth('register')">Register here</a>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register-card" class="auth-card hidden">
+        <h2>Student Registration</h2>
+        <form id="register-form">
+          <div>
+            <label>Full Name</label>
+            <input type="text" id="reg-name" placeholder="John Doe" required />
+          </div>
+          <div>
+            <label>Username</label>
+            <input type="text" id="reg-username" placeholder="johndoe" required />
+          </div>
+          <div>
+            <label>Department / Year</label>
+            <input type="text" id="reg-dept" placeholder="CSE - Year 2" required />
+          </div>
+          <div>
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Create password" required />
+          </div>
+          <button type="submit">Register Account</button>
+        </form>
+        <div class="auth-toggle">
+          Already registered? <a onclick="toggleAuth('login')">Login here</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== LIBRARIAN ADMIN PANEL ==================== -->
+    <div id="admin-panel" class="hidden">
+      <!-- Add / Update Book -->
+      <div class="card">
+        <h2>Add / Update Book</h2>
+        <form id="book-form" class="grid-form">
+          <input type="hidden" id="book-id" />
+          <input type="text" id="book-title" placeholder="Book Title" required />
+          <input type="text" id="book-author" placeholder="Author" required />
+          <input type="text" id="book-isbn" placeholder="ISBN" required />
+          <button type="submit">Save Book</button>
+        </form>
+      </div>
+
+      <!-- Book Inventory & Operations -->
+      <div class="card">
+        <h2>Book Inventory & Operations</h2>
+        <table id="admin-books-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>ISBN</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Material Management -->
+      <div class="card">
+        <h2>Update Material (Year, Semester wise)</h2>
+        <form id="material-form" class="grid-form">
+          <input type="text" id="mat-title" placeholder="Material Title" required />
+          <select id="mat-year" required>
+            <option value="">Select Year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+          <select id="mat-sem" required>
+            <option value="">Select Semester</option>
+            <option value="1">Sem 1</option>
+            <option value="2">Sem 2</option>
+          </select>
+          <input type="text" id="mat-link" placeholder="Material File URL/Link" required />
+          <button type="submit">Add Material</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== STUDENT PORTAL ==================== -->
+    <div id="student-panel" class="hidden">
+      
+      <!-- My Profile Card -->
+      <div class="card">
+        <h2>My Profile</h2>
+        <div id="profile-info"></div>
+      </div>
+
+      <!-- Search Books -->
+      <div class="card">
+        <h2>Search Book Catalog</h2>
+        <input type="text" id="search-book" placeholder="Search by title, author, or ISBN..." onkeyup="renderStudentBooks()" style="margin-bottom: 1rem;" />
+        <table id="student-books-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>ISBN</th>
+              <th>Availability</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- My Borrow History & Check Fine -->
+      <div class="card">
+        <h2>My Borrow History Book & Fines</h2>
+        <table id="borrow-history-table">
+          <thead>
+            <tr>
+              <th>Book Title</th>
+              <th>Issue Date</th>
+              <th>Exp Date</th>
+              <th>Status</th>
+              <th>Fine Amount</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Search & Download Material -->
+      <div class="card">
+        <h2>Search Material (Year & Semester Wise)</h2>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <select id="filter-year" onchange="renderMaterials()">
+            <option value="ALL">All Years</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+          <select id="filter-sem" onchange="renderMaterials()">
+            <option value="ALL">All Semesters</option>
+            <option value="1">Sem 1</option>
+            <option value="2">Sem 2</option>
+          </select>
+        </div>
+        <table id="materials-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Year</th>
+              <th>Semester</th>
+              <th>Download</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // --- Initial State & Storage ---
+    let currentUser = JSON.parse(localStorage.getItem('lib_current_user')) || null;
+    let users = JSON.parse(localStorage.getItem('lib_users')) || [
+      { name: 'Default Student', username: 'student', dept: 'CSE - Year 3', password: '123', role: 'student' }
+    ];
+    let books = JSON.parse(localStorage.getItem('lib_books')) || [
+      { id: 1, title: 'Internet Programming', author: 'Paul Deitel', isbn: '978-0132151009', status: 'Available', borrowedBy: null, issueDate: null, expDate: null, fine: 0 }
+    ];
+    let materials = JSON.parse(localStorage.getItem('lib_materials')) || [
+      { id: 1, title: 'Web Development Basics PDF', year: '2', sem: '1', link: '#' }
+    ];
+
+    function saveData() {
+      localStorage.setItem('lib_users', JSON.stringify(users));
+      localStorage.setItem('lib_books', JSON.stringify(books));
+      localStorage.setItem('lib_materials', JSON.stringify(materials));
+      localStorage.setItem('lib_current_user', JSON.stringify(currentUser));
+    }
+
+    // --- Authentication Logic ---
+    function toggleAuth(view) {
+      if (view === 'register') {
+        document.getElementById('login-card').classList.add('hidden');
+        document.getElementById('register-card').classList.remove('hidden');
+      } else {
+        document.getElementById('register-card').classList.add('hidden');
+        document.getElementById('login-card').classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('register-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const username = document.getElementById('reg-username').value;
+      const dept = document.getElementById('reg-dept').value;
+      const password = document.getElementById('reg-password').value;
+
+      if (users.some(u => u.username === username)) {
+        alert('Username already exists!');
+        return;
+      }
+
+      users.push({ name, username, dept, password, role: 'student' });
+      saveData();
+      alert('Registration Successful! Please login.');
+      toggleAuth('login');
+      e.target.reset();
+    });
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const role = document.getElementById('login-role').value;
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+
+      if (role === 'admin') {
+        if (username === 'admin' && password === 'admin123') {
+          currentUser = { name: 'Librarian Admin', username: 'admin', role: 'admin' };
+        } else {
+          alert('Invalid Admin Credentials! (Use admin / admin123)');
+          return;
+        }
+      } else {
+        const user = users.find(u => u.username === username && u.password === password);
+        if (user) {
+          currentUser = user;
+        } else {
+          alert('Invalid Username or Password!');
+          return;
+        }
+      }
+
+      saveData();
+      initUI();
+    });
+
+    function logout() {
+      currentUser = null;
+      saveData();
+      initUI();
+    }
+
+    // --- Admin Operations ---
+    document.getElementById('book-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('book-id').value;
+      const title = document.getElementById('book-title').value;
+      const author = document.getElementById('book-author').value;
+      const isbn = document.getElementById('book-isbn').value;
+
+      if (id) {
+        const book = books.find(b => b.id == id);
+        book.title = title; book.author = author; book.isbn = isbn;
+      } else {
+        books.push({ id: Date.now(), title, author, isbn, status: 'Available', borrowedBy: null, issueDate: null, expDate: null, fine: 0 });
+      }
+
+      saveData();
+      e.target.reset();
+      document.getElementById('book-id').value = '';
+      renderAdmin();
+    });
+
+    function deleteBook(id) {
+      books = books.filter(b => b.id != id);
+      saveData();
+      renderAdmin();
+    }
+
+    function editBook(id) {
+      const book = books.find(b => b.id == id);
+      document.getElementById('book-id').value = book.id;
+      document.getElementById('book-title').value = book.title;
+      document.getElementById('book-author').value = book.author;
+      document.getElementById('book-isbn').value = book.isbn;
+    }
+
+    function issueBook(id) {
+      const studentUsername = prompt('Enter Student Username to Issue Book:');
+      if (!studentUsername) return;
+
+      const book = books.find(b => b.id == id);
+      const today = new Date();
+      const exp = new Date();
+      exp.setDate(today.getDate() + 14);
+
+      book.status = 'Issued';
+      book.borrowedBy = studentUsername;
+      book.issueDate = today.toISOString().split('T')[0];
+      book.expDate = exp.toISOString().split('T')[0];
+      book.fine = 0;
+
+      saveData();
+      renderAdmin();
+    }
+
+    function returnBook(id) {
+      const book = books.find(b => b.id == id);
+      const exp = new Date(book.expDate);
+      const today = new Date();
+      let fine = 0;
+
+      if (today > exp) {
+        const diffDays = Math.ceil((today - exp) / (1000 * 60 * 60 * 24));
+        fine = diffDays * 10;
+      }
+
+      if (fine > 0) alert(`Book is Overdue! Calculated Fine: ₹${fine}`);
+
+      book.status = 'Available';
+      book.borrowedBy = null;
+      book.issueDate = null;
+      book.expDate = null;
+      book.fine = fine;
+
+      saveData();
+      renderAdmin();
+    }
+
+    document.getElementById('material-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('mat-title').value;
+      const year = document.getElementById('mat-year').value;
+      const sem = document.getElementById('mat-sem').value;
+      const link = document.getElementById('mat-link').value;
+
+      materials.push({ id: Date.now(), title, year, sem, link });
+      saveData();
+      e.target.reset();
+      alert('Material Added Successfully!');
+      renderAdmin();
+    });
+
+    // --- Render Functions ---
+    function renderAdmin() {
+      const tbody = document.querySelector('#admin-books-table tbody');
+      tbody.innerHTML = books.map(b => `
+        <tr>
+          <td>${b.id}</td>
+          <td>${b.title}</td>
+          <td>${b.author}</td>
+          <td>${b.isbn}</td>
+          <td><span class="badge ${b.status === 'Available' ? 'bg-success' : 'bg-danger'}">${b.status}</span></td>
+          <td>
+            <button onclick="editBook(${b.id})" style="width:auto; padding: 0.3rem 0.6rem;">Edit</button>
+            <button class="btn-danger" onclick="deleteBook(${b.id})" style="width:auto; padding: 0.3rem 0.6rem;">Delete</button>
+            ${b.status === 'Available' 
+              ? `<button onclick="issueBook(${b.id})" style="width:auto; padding: 0.3rem 0.6rem;">Issue</button>` 
+              : `<button onclick="returnBook(${b.id})" style="width:auto; padding: 0.3rem 0.6rem;">Return</button>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderStudentBooks() {
+      const query = document.getElementById('search-book').value.toLowerCase();
+      const tbody = document.querySelector('#student-books-table tbody');
+      const filtered = books.filter(b => 
+        b.title.toLowerCase().includes(query) || 
+        b.author.toLowerCase().includes(query) || 
+        b.isbn.toLowerCase().includes(query)
+      );
+
+      tbody.innerHTML = filtered.map(b => `
+        <tr>
+          <td>${b.title}</td>
+          <td>${b.author}</td>
+          <td>${b.isbn}</td>
+          <td><span class="badge ${b.status === 'Available' ? 'bg-success' : 'bg-danger'}">${b.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderBorrowHistory() {
+      const tbody = document.querySelector('#borrow-history-table tbody');
+      const myIssued = books.filter(b => b.borrowedBy === currentUser.username);
+
+      tbody.innerHTML = myIssued.length ? myIssued.map(b => `
+        <tr>
+          <td>${b.title}</td>
+          <td>${b.issueDate}</td>
+          <td>${b.expDate}</td>
+          <td><span class="badge bg-danger">Issued</span></td>
+          <td>₹${b.fine}</td>
+        </tr>
+      `).join('') : '<tr><td colspan="5">No active issued books found.</td></tr>';
+    }
+
+    function renderMaterials() {
+      const year = document.getElementById('filter-year').value;
+      const sem = document.getElementById('filter-sem').value;
+      const tbody = document.querySelector('#materials-table tbody');
+
+      const filtered = materials.filter(m => 
+        (year === 'ALL' || m.year === year) &&
+        (sem === 'ALL' || m.sem === sem)
+      );
+
+      tbody.innerHTML = filtered.map(m => `
+        <tr>
+          <td>${m.title}</td>
+          <td>Year ${m.year}</td>
+          <td>Sem ${m.sem}</td>
+          <td><a href="${m.link}" target="_blank" style="color:var(--secondary);">Download Material</a></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderProfile() {
+      document.getElementById('profile-info').innerHTML = `
+        <p><strong>Name:</strong> ${currentUser.name}</p>
+        <p><strong>Username:</strong> ${currentUser.username}</p>
+        <p><strong>Department/Year:</strong> ${currentUser.dept || 'N/A'}</p>
+      `;
+    }
+
+    // --- UI State Management ---
+    function initUI() {
+      const authSection = document.getElementById('auth-section');
+      const adminPanel = document.getElementById('admin-panel');
+      const studentPanel = document.getElementById('student-panel');
+      const headerInfo = document.getElementById('header-user-info');
+      const userDisplay = document.getElementById('user-display');
+
+      if (!currentUser) {
+        authSection.classList.remove('hidden');
+        adminPanel.classList.add('hidden');
+        studentPanel.classList.add('hidden');
+        headerInfo.classList.add('hidden');
+      } else if (currentUser.role === 'admin') {
+        authSection.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        studentPanel.classList.add('hidden');
+        headerInfo.classList.remove('hidden');
+        userDisplay.innerText = `Role: Librarian Admin (${currentUser.name})`;
+        renderAdmin();
+      } else {
+        authSection.classList.add('hidden');
+        adminPanel.classList.add('hidden');
+        studentPanel.classList.remove('hidden');
+        headerInfo.classList.remove('hidden');
+        userDisplay.innerText = `Logged in as: ${currentUser.name}`;
+        renderProfile();
+        renderStudentBooks();
+        renderBorrowHistory();
+        renderMaterials();
+      }
+    }
+
+    // Initialize application
+    initUI();
+  </script>
+</body>
+</html>

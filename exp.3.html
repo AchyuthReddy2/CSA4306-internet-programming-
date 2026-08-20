@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Bus Ticket Booking System</title>
+
+    <style>
+        body{
+            margin:0;
+            font-family:Arial,sans-serif;
+            background:#f2f2f2;
+        }
+
+        header{
+            background:#0077b6;
+            color:white;
+            text-align:center;
+            padding:20px;
+        }
+
+        nav{
+            background:#333;
+            padding:12px;
+            text-align:center;
+        }
+
+        nav a{
+            color:white;
+            text-decoration:none;
+            margin:15px;
+            font-size:17px;
+        }
+
+        .container{
+            width:90%;
+            margin:auto;
+        }
+
+        .search{
+            background:white;
+            padding:20px;
+            margin:20px 0;
+            border-radius:8px;
+            box-shadow:0 0 5px gray;
+        }
+
+        input,select{
+            padding:8px;
+            margin:8px;
+        }
+
+        button{
+            background:#0077b6;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            cursor:pointer;
+            border-radius:5px;
+        }
+
+        .buses{
+            display:flex;
+            justify-content:space-around;
+            flex-wrap:wrap;
+        }
+
+        .card{
+            width:230px;
+            background:white;
+            margin:15px;
+            padding:15px;
+            border-radius:8px;
+            text-align:center;
+            box-shadow:0 0 5px gray;
+        }
+
+        .card img{
+            width:180px;
+            height:120px;
+        }
+
+        footer{
+            background:#333;
+            color:white;
+            text-align:center;
+            padding:15px;
+            margin-top:20px;
+        }
+
+        ul{
+            line-height:30px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<header>
+    <h1>Online Bus Ticket Booking System</h1>
+    <p>Book Your Bus Tickets Anytime, Anywhere</p>
+</header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="#">Login</a>
+    <a href="#">Register</a>
+    <a href="#">Search Bus</a>
+    <a href="#">Book Ticket</a>
+    <a href="#">My Bookings</a>
+    <a href="#">Comments</a>
+    <a href="#">Admin</a>
+</nav>
+
+<div class="container">
+
+<div class="search">
+
+<h2>Search Bus</h2>
+
+<form>
+
+From :
+<input type="text" placeholder="Source">
+
+To :
+<input type="text" placeholder="Destination">
+
+Journey Date :
+<input type="date">
+
+Bus Type :
+<select>
+<option>Volvo</option>
+<option>Sleeper</option>
+<option>AC Coach</option>
+<option>Non AC</option>
+</select>
+
+<button>Search</button>
+
+</form>
+
+</div>
+
+<h2>Available Bus Categories</h2>
+
+<div class="buses">
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="Volvo">
+<h3>Volvo Bus</h3>
+<p>Luxury AC Bus</p>
+<p>Available Seats : 32</p>
+<p><b>₹1200</b></p>
+<button>Book Ticket</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="Sleeper">
+<h3>Sleeper Coach</h3>
+<p>Comfortable Sleeper</p>
+<p>Available Seats : 24</p>
+<p><b>₹1500</b></p>
+<button>Book Ticket</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="AC">
+<h3>AC Coach</h3>
+<p>Air Conditioned</p>
+<p>Available Seats : 40</p>
+<p><b>₹1000</b></p>
+<button>Book Ticket</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="Non AC">
+<h3>Non AC Coach</h3>
+<p>Economy Travel</p>
+<p>Available Seats : 45</p>
+<p><b>₹700</b></p>
+<button>Book Ticket</button>
+</div>
+
+</div>
+
+<h2>User Features</h2>
+
+<ul>
+<li>User Registration</li>
+<li>User Login</li>
+<li>Forgot Password</li>
+<li>Search Buses</li>
+<li>Check Seat Availability</li>
+<li>Book Bus Tickets</li>
+<li>Cancel Tickets</li>
+<li>Booking History</li>
+<li>Secure Online Payment</li>
+<li>Post Comments and Reviews</li>
+</ul>
+
+<h2>Administrator Features</h2>
+
+<ul>
+<li>Manage Bus Categories</li>
+<li>Add New Bus</li>
+<li>Update Bus Information</li>
+<li>Manage Seat Availability</li>
+<li>Manage Registered Users</li>
+<li>Manage News</li>
+<li>Manage Comments</li>
+<li>Generate Reports</li>
+<li>Cancel User Bookings</li>
+<li>Manage Entire System</li>
+</ul>
+
+<h2>Bus Information</h2>
+
+<p>
+Our buses provide comfortable seating, air conditioning, GPS tracking,
+charging points, and experienced drivers for a safe and pleasant journey.
+</p>
+
+<h2>Customer Support</h2>
+
+<ul>
+<li>24×7 Customer Care</li>
+<li>Email Support</li>
+<li>Ticket Cancellation Assistance</li>
+<li>Refund Support</li>
+</ul>
+
+<h2>Contact Us</h2>
+
+<p>
+Address : Hyderabad, India<br>
+Phone : +91 9876543210<br>
+Email : support@busbooking.com
+</p>
+
+<h2>Privacy Policy</h2>
+
+<p>
+Your personal information and payment details are protected using secure encryption.
+</p>
+
+</div>
+
+<footer>
+<p>© 2026 Online Bus Ticket Booking System | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

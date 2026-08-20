@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Flight Reservation System</title>
+
+    <style>
+        body{
+            margin:0;
+            font-family:Arial,sans-serif;
+            background:#f2f2f2;
+        }
+
+        header{
+            background:#0066cc;
+            color:white;
+            text-align:center;
+            padding:20px;
+        }
+
+        nav{
+            background:#333;
+            padding:12px;
+            text-align:center;
+        }
+
+        nav a{
+            color:white;
+            text-decoration:none;
+            margin:15px;
+            font-size:17px;
+        }
+
+        .container{
+            width:90%;
+            margin:auto;
+        }
+
+        .search{
+            background:white;
+            padding:20px;
+            margin:20px 0;
+            border-radius:8px;
+            box-shadow:0 0 5px gray;
+        }
+
+        input,select{
+            padding:8px;
+            margin:8px;
+        }
+
+        button{
+            background:#0066cc;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        .flights{
+            display:flex;
+            justify-content:space-around;
+            flex-wrap:wrap;
+        }
+
+        .card{
+            width:230px;
+            background:white;
+            margin:15px;
+            padding:15px;
+            text-align:center;
+            border-radius:8px;
+            box-shadow:0 0 5px gray;
+        }
+
+        .card img{
+            width:180px;
+            height:120px;
+        }
+
+        ul{
+            line-height:30px;
+        }
+
+        footer{
+            background:#333;
+            color:white;
+            text-align:center;
+            padding:15px;
+            margin-top:20px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<header>
+    <h1>Online Flight Reservation System</h1>
+    <p>Book Domestic & International Flights</p>
+</header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="#">Login</a>
+    <a href="#">Register</a>
+    <a href="#">Search Flights</a>
+    <a href="#">Book Ticket</a>
+    <a href="#">My Tickets</a>
+    <a href="#">Booking Status</a>
+    <a href="#">Admin</a>
+</nav>
+
+<div class="container">
+
+<div class="search">
+
+<h2>Search Flights</h2>
+
+<form>
+
+From :
+<input type="text" placeholder="Departure City">
+
+To :
+<input type="text" placeholder="Destination City">
+
+Departure :
+<input type="date">
+
+Class :
+<select>
+<option>Economy</option>
+<option>Premium Economy</option>
+<option>Business</option>
+<option>First Class</option>
+</select>
+
+<button>Search Flight</button>
+
+</form>
+
+</div>
+
+<h2>Available Flights</h2>
+
+<div class="flights">
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="Flight">
+<h3>IndiGo</h3>
+<p>Hyderabad → Delhi</p>
+<p>Seats Available: 35</p>
+<p><b>₹5,200</b></p>
+<button>Book Now</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="Flight">
+<h3>Air India</h3>
+<p>Chennai → Mumbai</p>
+<p>Seats Available: 22</p>
+<p><b>₹6,800</b></p>
+<button>Book Now</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="Flight">
+<h3>SpiceJet</h3>
+<p>Bangalore → Kolkata</p>
+<p>Seats Available: 18</p>
+<p><b>₹4,700</b></p>
+<button>Book Now</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/180x120" alt="Flight">
+<h3>Vistara</h3>
+<p>Delhi → Goa</p>
+<p>Seats Available: 28</p>
+<p><b>₹7,500</b></p>
+<button>Book Now</button>
+</div>
+
+</div>
+
+<hr>
+
+<h2>User Features</h2>
+
+<ul>
+<li>User Registration</li>
+<li>User Login</li>
+<li>Forgot Password</li>
+<li>Search Flights</li>
+<li>View Flight Availability</li>
+<li>Select Seats</li>
+<li>Book Flight Tickets</li>
+<li>Secure Online Payment</li>
+<li>Receive E-Ticket by Email</li>
+<li>View Booking History</li>
+<li>View Booking Status</li>
+<li>Print Ticket</li>
+<li>Cancel Ticket</li>
+<li>Customer Feedback</li>
+</ul>
+
+<hr>
+
+<h2>Administrator Features</h2>
+
+<ul>
+<li>Manage Flight Schedules</li>
+<li>Manage Flight Inventory</li>
+<li>Manage Seat Availability</li>
+<li>Manage Ticket Prices</li>
+<li>Manage Registered Users</li>
+<li>Manage Bookings</li>
+<li>Cancel Bookings</li>
+<li>Generate Reports</li>
+<li>View Customer Feedback</li>
+<li>Manage Entire Reservation System</li>
+</ul>
+
+<hr>
+
+<h2>Booking Status</h2>
+
+<form>
+
+Booking ID :
+<input type="text" placeholder="Enter Booking ID">
+
+<button>Check Status</button>
+
+</form>
+
+<hr>
+
+<h2>Customer Feedback</h2>
+
+<textarea rows="5" cols="60" placeholder="Write your feedback here..."></textarea>
+<br><br>
+<button>Submit Feedback</button>
+
+<hr>
+
+<h2>Contact Us</h2>
+
+<p>
+Flight Reservation Office<br>
+Phone : +91 9876543210<br>
+Email : support@flightbooking.com
+</p>
+
+<h2>Privacy Policy</h2>
+
+<p>
+Your personal information and payment details are securely protected using encrypted transactions.
+</p>
+
+</div>
+
+<footer>
+<p>© 2026 Online Flight Reservation System | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hotel Room Booking System</title>
+
+    <style>
+        body{
+            margin:0;
+            font-family:Arial, sans-serif;
+            background:#f2f2f2;
+        }
+
+        header{
+            background:#0066cc;
+            color:white;
+            padding:20px;
+            text-align:center;
+        }
+
+        nav{
+            background:#333;
+            padding:12px;
+            text-align:center;
+        }
+
+        nav a{
+            color:white;
+            text-decoration:none;
+            margin:15px;
+            font-size:18px;
+        }
+
+        .banner{
+            background:#0099cc;
+            color:white;
+            text-align:center;
+            padding:40px;
+        }
+
+        .container{
+            width:90%;
+            margin:auto;
+            padding:20px;
+        }
+
+        .rooms{
+            display:flex;
+            justify-content:space-around;
+            flex-wrap:wrap;
+        }
+
+        .card{
+            width:220px;
+            background:white;
+            margin:15px;
+            padding:15px;
+            text-align:center;
+            border-radius:8px;
+            box-shadow:0 0 8px gray;
+        }
+
+        .card img{
+            width:180px;
+            height:130px;
+        }
+
+        button{
+            background:#0066cc;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            cursor:pointer;
+            border-radius:5px;
+        }
+
+        footer{
+            background:#333;
+            color:white;
+            text-align:center;
+            padding:15px;
+            margin-top:20px;
+        }
+
+        ul{
+            line-height:30px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<header>
+    <h1>Hotel Room Booking System</h1>
+    <p>Book Luxury Rooms at Affordable Prices</p>
+</header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="#">Login</a>
+    <a href="#">Register</a>
+    <a href="#">Rooms</a>
+    <a href="#">Booking</a>
+    <a href="#">My Bookings</a>
+    <a href="#">Contact</a>
+    <a href="#">Admin</a>
+</nav>
+
+<div class="banner">
+    <h2>Welcome to Our Hotel</h2>
+    <p>Search, Book and Enjoy Your Stay</p>
+</div>
+
+<div class="container">
+
+<h2>Search Rooms</h2>
+
+<form>
+    Destination :
+    <input type="text" placeholder="Enter City">
+
+    Check-In :
+    <input type="date">
+
+    Check-Out :
+    <input type="date">
+
+    Guests :
+    <input type="number" min="1" value="1">
+
+    <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<h2>Room Types</h2>
+
+<div class="rooms">
+
+<div class="card">
+    <img src="https://via.placeholder.com/180x130" alt="Single Room">
+    <h3>Single Room</h3>
+    <p>1 Bed</p>
+    <p>Free Wi-Fi</p>
+    <p><b>₹2,000 / Night</b></p>
+    <button>Book Now</button>
+</div>
+
+<div class="card">
+    <img src="https://via.placeholder.com/180x130" alt="Double Room">
+    <h3>Double Room</h3>
+    <p>2 Beds</p>
+    <p>Free Breakfast</p>
+    <p><b>₹3,500 / Night</b></p>
+    <button>Book Now</button>
+</div>
+
+<div class="card">
+    <img src="https://via.placeholder.com/180x130" alt="Deluxe Room">
+    <h3>Deluxe Room</h3>
+    <p>AC + TV</p>
+    <p>Swimming Pool</p>
+    <p><b>₹5,000 / Night</b></p>
+    <button>Book Now</button>
+</div>
+
+<div class="card">
+    <img src="https://via.placeholder.com/180x130" alt="Suite Room">
+    <h3>Suite Room</h3>
+    <p>Luxury Suite</p>
+    <p>Free Spa</p>
+    <p><b>₹8,000 / Night</b></p>
+    <button>Book Now</button>
+</div>
+
+</div>
+
+<hr>
+
+<h2>User Features</h2>
+
+<ul>
+    <li>User Registration</li>
+    <li>User Login</li>
+    <li>View and Update Profile</li>
+    <li>Check Room Availability</li>
+    <li>Book Hotel Rooms</li>
+    <li>Modify Booking</li>
+    <li>Cancel Booking</li>
+    <li>Booking History</li>
+    <li>Secure Payment</li>
+    <li>Reviews and Ratings</li>
+</ul>
+
+<hr>
+
+<h2>Administrator Features</h2>
+
+<ul>
+    <li>Manage Room Types</li>
+    <li>Update Room Prices</li>
+    <li>Manage Room Availability</li>
+    <li>Modify Bookings</li>
+    <li>Cancel Bookings</li>
+    <li>Manage Users</li>
+    <li>Edit About Us Page</li>
+    <li>Edit Contact Us Page</li>
+    <li>Update Privacy Policy</li>
+    <li>Manage Customer Support</li>
+</ul>
+
+<hr>
+
+<h2>About Our Hotel</h2>
+
+<p>
+We provide comfortable rooms with excellent facilities including Wi-Fi,
+air conditioning, restaurant, swimming pool, parking, and 24×7 customer support.
+</p>
+
+<h2>Contact Us</h2>
+
+<p>
+📍 Hyderabad, India<br>
+📞 +91 9876543210<br>
+📧 hotelbooking@gmail.com
+</p>
+
+<h2>Customer Service</h2>
+
+<ul>
+    <li>24×7 Help Desk</li>
+    <li>Booking Assistance</li>
+    <li>Cancellation Support</li>
+</ul>
+
+<h2>Privacy Policy</h2>
+
+<p>
+Your personal information and payment details are securely protected.
+</p>
+
+</div>
+
+<footer>
+    <p>© 2026 Hotel Room Booking System | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>
