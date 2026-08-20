@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCare - Online Pharmacy & Prescription Management Portal (Exp 24)</title>
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-hover: #0f766e;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #2dd4bf;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .nav-links button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-warning { background-color: var(--accent); }
+        .badge-danger { background-color: var(--danger); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .med-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .rx-badge {
+            background: #ccfbf1;
+            color: #0f766e;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            width: fit-content;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">💊 PharmaCare Online Healthcare Portal</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('patient-login')">Patient Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('patient-register')">Register Patient</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Pharmacist Admin</button>
+                    </div>
+
+                    <!-- Patient Login -->
+                    <form id="form-patient-login" onsubmit="handleAuth(event, 'patient')">
+                        <h2 style="border:none; text-align:center;">Patient Portal Sign In</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-patient-email" value="patient@pharmacare.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="password" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Login as Patient</button>
+                    </form>
+
+                    <!-- Patient Registration -->
+                    <form id="form-patient-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Create Patient Account</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="Sarah Jenkins" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Phone Number</label>
+                            <input type="text" placeholder="+1 (555) 019-2831" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="sarah@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Register Account</button>
+                    </form>
+
+                    <!-- Admin/Pharmacist Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Pharmacist Admin Portal</h2>
+                        <div class="form-group">
+                            <label>Staff ID / Email</label>
+                            <input type="text" id="login-admin-email" value="admin@pharmacare.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="admin123" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Login as Pharmacist</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. PATIENT DASHBOARD -->
+        <div id="view-patient-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="p-nav-catalog" class="active" onclick="switchPatientTab('catalog')">Medicine Catalog</button>
+                <button id="p-nav-rx" onclick="switchPatientTab('rx')">Upload Prescription</button>
+                <button id="p-nav-orders" onclick="switchPatientTab('orders')">My Orders & Tracking</button>
+                <button id="p-nav-cart" onclick="switchPatientTab('cart')">Cart & Checkout (<span id="cart-count">0</span>)</button>
+                <button id="p-nav-profile" onclick="switchPatientTab('profile')">Patient Profile</button>
+            </div>
+
+            <!-- Medicine Catalog -->
+            <div id="patient-tab-catalog">
+                <div class="card">
+                    <h2>Browse Medicines & Health Supplies</h2>
+                    <div class="grid-3" id="med-catalog-container"></div>
+                </div>
+            </div>
+
+            <!-- Upload Prescription -->
+            <div id="patient-tab-rx" style="display: none;">
+                <div class="card">
+                    <h2>Upload Doctor Prescription</h2>
+                    <form onsubmit="uploadPrescription(event)">
+                        <div class="form-group">
+                            <label>Doctor / Clinic Name</label>
+                            <input type="text" id="rx-doctor" placeholder="Dr. Robert Miller - City Health Clinic" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Prescribed Medicines / Notes</label>
+                            <textarea id="rx-notes" rows="3" placeholder="List prescribed medicines and dose instructions..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Prescription File / Link</label>
+                            <input type="text" id="rx-file" placeholder="Paste link or prescription document ref (e.g., RX-DOC-9021)" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Prescription for Review</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Orders -->
+            <div id="patient-tab-orders" style="display: none;">
+                <div class="card">
+                    <h2>My Medicine Orders</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Ref</th>
+                                <th>Items</th>
+                                <th>Total Price</th>
+                                <th>Order Date</th>
+                                <th>Delivery Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patient-orders-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cart & Checkout -->
+            <div id="patient-tab-cart" style="display: none;">
+                <div class="card">
+                    <h2>Shopping Cart Items</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item Title</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-table"></tbody>
+                    </table>
+                    <div style="text-align: right; margin-top: 1rem;">
+                        <h3>Total Amount: $<span id="cart-total-price">0.00</span></h3>
+                        <button class="btn-submit" style="width: auto; margin-top: 0.5rem; padding: 0.6rem 2rem;" onclick="processCheckout()">Proceed to Checkout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div id="patient-tab-profile" style="display: none;">
+                <div class="card">
+                    <h2>Patient Medical Record Profile</h2>
+                    <div id="patient-profile-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN / PHARMACIST DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="a-nav-inventory" class="active" onclick="switchAdminTab('inventory')">Manage Medicine Stock</button>
+                <button id="a-nav-addmed" onclick="switchAdminTab('addmed')">Add New Medicine</button>
+                <button id="a-nav-orders" onclick="switchAdminTab('orders')">Process Orders</button>
+                <button id="a-nav-rx" onclick="switchAdminTab('rx')">Prescription Verification</button>
+            </div>
+
+            <!-- Inventory -->
+            <div id="admin-tab-inventory">
+                <div class="card">
+                    <h2>Pharmacy Inventory & Stock Control</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Medicine Name</th>
+                                <th>Category</th>
+                                <th>Stock Level</th>
+                                <th>Price</th>
+                                <th>Rx Required</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-inventory-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add Medicine -->
+            <div id="admin-tab-addmed" style="display: none;">
+                <div class="card">
+                    <h2>Add Medicine to Inventory</h2>
+                    <form onsubmit="addMedicine(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Medicine Name</label>
+                                <input type="text" id="m-name" placeholder="Amoxicillin 500mg" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="m-category">
+                                    <option value="Antibiotic">Antibiotic</option>
+                                    <option value="Pain Relief">Pain Relief</option>
+                                    <option value="Vitamins & Supplements">Vitamins & Supplements</option>
+                                    <option value="First Aid">First Aid</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Unit Price ($)</label>
+                                <input type="number" step="0.01" id="m-price" placeholder="12.50" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Stock Quantity</label>
+                                <input type="number" id="m-stock" value="50" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Prescription Requirement</label>
+                            <select id="m-rx">
+                                <option value="Prescription Required">Prescription Required</option>
+                                <option value="OTC (Over the Counter)">OTC (Over the Counter)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Medicine Record</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Process Orders -->
+            <div id="admin-tab-orders" style="display: none;">
+                <div class="card">
+                    <h2>Customer Orders & Dispatch Center</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Ref</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Prescription Verification -->
+            <div id="admin-tab-rx" style="display: none;">
+                <div class="card">
+                    <h2>Pending Prescription Submissions</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Patient Notes</th>
+                                <th>Ref Link</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-rx-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let currentUser = null;
+
+        let medicines = [
+            { id: 201, name: 'Paracetamol Extra 500mg', category: 'Pain Relief', price: 6.50, stock: 120, rx: 'OTC (Over the Counter)' },
+            { id: 202, name: 'Amoxicillin Trihydrate 500mg', category: 'Antibiotic', price: 18.20, stock: 45, rx: 'Prescription Required' },
+            { id: 203, name: 'Multivitamin Complete Care', category: 'Vitamins & Supplements', price: 14.00, stock: 80, rx: 'OTC (Over the Counter)' }
+        ];
+
+        let cart = [];
+
+        let orders = [
+            { ref: 'ORD-9912', customer: 'Sarah Jenkins', items: 'Paracetamol Extra (x2)', total: 13.00, date: '2026-08-05', status: 'Dispatched' }
+        ];
+
+        let prescriptions = [
+            { doctor: 'Dr. Robert Miller', notes: 'Amoxicillin 500mg thrice daily after meals.', file: 'RX-DOC-9021', status: 'Approved' }
+        ];
+
+        // UI Handlers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-card .tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-patient-login').style.display = 'none';
+            document.getElementById('form-patient-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'patient-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-patient-login').style.display = 'block';
+            } else if (tab === 'patient-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-patient-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchPatientTab(tab) {
+            ['catalog', 'rx', 'orders', 'cart', 'profile'].forEach(t => {
+                document.getElementById(`patient-tab-${t}`).style.display = 'none';
+                document.getElementById(`p-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`patient-tab-${tab}`).style.display = 'block';
+            document.getElementById(`p-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'catalog') renderMedCatalog();
+            if (tab === 'orders') renderPatientOrders();
+            if (tab === 'cart') renderCart();
+            if (tab === 'profile') renderPatientProfile();
+        }
+
+        function switchAdminTab(tab) {
+            ['inventory', 'addmed', 'orders', 'rx'].forEach(t => {
+                document.getElementById(`admin-tab-${t}`).style.display = 'none';
+                document.getElementById(`a-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`admin-tab-${tab}`).style.display = 'block';
+            document.getElementById(`a-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'inventory') renderAdminInventory();
+            if (tab === 'orders') renderAdminOrders();
+            if (tab === 'rx') renderAdminRx();
+        }
+
+        // Auth
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'patient') {
+                const email = document.getElementById('login-patient-email').value || "patient@pharmacare.com";
+                currentUser = { name: "Sarah Jenkins", email, role: 'Patient' };
+                document.getElementById('user-display-name').textContent = `Patient: ${currentUser.name}`;
+                switchPatientTab('catalog');
+                showView('view-patient-dashboard');
+            } else {
+                currentUser = { name: "Chief Pharmacist Admin", role: 'Admin' };
+                document.getElementById('user-display-name').textContent = `Pharmacist Portal`;
+                switchAdminTab('inventory');
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Patient account registered! Please sign in.');
+            switchAuthTab('patient-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Patient Functions
+        function renderMedCatalog() {
+            const container = document.getElementById('med-catalog-container');
+            container.innerHTML = '';
+
+            medicines.forEach(m => {
+                container.innerHTML += `
+                    <div class="med-card">
+                        <div>
+                            <span class="rx-badge">${m.rx}</span>
+                            <h3 style="border:none; margin-bottom:0.3rem;">${m.name}</h3>
+                            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:0.5rem;">Category: ${m.category}</p>
+                            <p style="font-size:0.85rem; margin-bottom:0.8rem;">Stock: <strong>${m.stock} units</strong></p>
+                        </div>
+                        <div>
+                            <p style="font-size:1.2rem; font-weight:800; color:var(--primary); margin-bottom:0.8rem;">$${m.price.toFixed(2)}</p>
+                            <button class="btn-submit" onclick="addToCart(${m.id})">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(medId) {
+            const med = medicines.find(m => m.id === medId);
+            if (!med) return;
+
+            const existing = cart.find(c => c.id === medId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...med, qty: 1 });
+            }
+
+            document.getElementById('cart-count').textContent = cart.reduce((a, b) => a + b.qty, 0);
+            alert(`Added "${med.name}" to cart!`);
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cart-table');
+            tbody.innerHTML = '';
+
+            let total = 0;
+            cart.forEach(item => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.name}</strong></td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>${item.qty}</td>
+                        <td>$${subtotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('cart-total-price').textContent = total.toFixed(2);
+        }
+
+        function processCheckout() {
+            if (cart.length === 0) {
+                alert('Cart is empty!');
+                return;
+            }
+
+            const ref = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+            const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            const itemsStr = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
+
+            orders.unshift({
+                ref,
+                customer: currentUser.name,
+                items: itemsStr,
+                total,
+                date: new Date().toISOString().split('T')[0],
+                status: 'Processing'
+            });
+
+            cart = [];
+            document.getElementById('cart-count').textContent = '0';
+            alert(`Order placed successfully! Reference: ${ref}`);
+            switchPatientTab('orders');
+        }
+
+        function uploadPrescription(e) {
+            e.preventDefault();
+            const doctor = document.getElementById('rx-doctor').value;
+            const notes = document.getElementById('rx-notes').value;
+            const file = document.getElementById('rx-file').value;
+
+            prescriptions.unshift({ doctor, notes, file, status: 'Under Review' });
+            alert('Prescription submitted for pharmacist verification!');
+            e.target.reset();
+        }
+
+        function renderPatientOrders() {
+            const tbody = document.getElementById('patient-orders-table');
+            tbody.innerHTML = '';
+            orders.forEach(o => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${o.ref}</strong></td>
+                        <td>${o.items}</td>
+                        <td>$${o.total.toFixed(2)}</td>
+                        <td>${o.date}</td>
+                        <td><span class="badge ${o.status === 'Dispatched' ? 'badge-success' : 'badge-warning'}">${o.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderPatientProfile() {
+            const box = document.getElementById('patient-profile-box');
+            box.innerHTML = `
+                <p><strong>Patient Name:</strong> ${currentUser.name}</p>
+                <p><strong>Email Address:</strong> ${currentUser.email}</p>
+                <p><strong>Total Orders Placed:</strong> ${orders.length}</p>
+            `;
+        }
+
+        // Admin Functions
+        function addMedicine(e) {
+            e.preventDefault();
+            const name = document.getElementById('m-name').value;
+            const category = document.getElementById('m-category').value;
+            const price = parseFloat(document.getElementById('m-price').value);
+            const stock = parseInt(document.getElementById('m-stock').value);
+            const rx = document.getElementById('m-rx').value;
+
+            medicines.push({ id: 200 + medicines.length + 1, name, category, price, stock, rx });
+            alert(`Added "${name}" to pharmacy stock!`);
+            e.target.reset();
+            switchAdminTab('inventory');
+        }
+
+        function renderAdminInventory() {
+            const tbody = document.getElementById('admin-inventory-table');
+            tbody.innerHTML = '';
+            medicines.forEach(m => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>#${m.id}</strong></td>
+                        <td>${m.name}</td>
+                        <td>${m.category}</td>
+                        <td>${m.stock}</td>
+                        <td>$${m.price.toFixed(2)}</td>
+                        <td><span class="badge ${m.rx.includes('OTC') ? 'badge-success' : 'badge-warning'}">${m.rx}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminOrders() {
+            const tbody = document.getElementById('admin-orders-table');
+            tbody.innerHTML = '';
+            orders.forEach((o, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${o.ref}</strong></td>
+                        <td>${o.customer}</td>
+                        <td>$${o.total.toFixed(2)}</td>
+                        <td><span class="badge ${o.status === 'Dispatched' ? 'badge-success' : 'badge-warning'}">${o.status}</span></td>
+                        <td>
+                            ${o.status === 'Processing' 
+                                ? `<button class="btn-submit" style="padding:0.3rem 0.6rem; width:auto;" onclick="dispatchOrder(${idx})">Dispatch</button>`
+                                : 'Completed'
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function dispatchOrder(idx) {
+            orders[idx].status = 'Dispatched';
+            alert('Order status updated to Dispatched!');
+            renderAdminOrders();
+        }
+
+        function renderAdminRx() {
+            const tbody = document.getElementById('admin-rx-table');
+            tbody.innerHTML = '';
+            prescriptions.forEach((r, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${r.doctor}</strong></td>
+                        <td>${r.notes}</td>
+                        <td><small>${r.file}</small></td>
+                        <td><span class="badge ${r.status === 'Approved' ? 'badge-success' : 'badge-warning'}">${r.status}</span></td>
+                        <td>
+                            ${r.status === 'Under Review' 
+                                ? `<button class="btn-submit" style="padding:0.3rem 0.6rem; width:auto;" onclick="approveRx(${idx})">Approve</button>`
+                                : 'Verified'
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function approveRx(idx) {
+            prescriptions[idx].status = 'Approved';
+            alert('Prescription approved!');
+            renderAdminRx();
+        }
+    </script>
+</body>
+</html>

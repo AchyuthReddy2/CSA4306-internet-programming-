@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Bank - Online Banking & Fund Transfer (Exp 11)</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #1e293b;
+            --accent: #0284c7;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover { background-color: #b91c1c; }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-danger { background-color: var(--danger); }
+        .badge-info { background-color: var(--accent); }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .balance-card h3 {
+            color: #e2e8f0;
+            border: none;
+        }
+
+        .balance-card .amount {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <h1>Apex Internet Banking</h1>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome, User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Customer Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register Account</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Bank Officer</button>
+                    </div>
+
+                    <!-- Customer Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Internet Banking Login</h2>
+                        <div class="form-group">
+                            <label>Account Number / Username</label>
+                            <input type="text" id="login-acc" placeholder="10012345" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Login to Dashboard</button>
+                    </form>
+
+                    <!-- Register -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Open New Account</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="reg-name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Initial Deposit ($)</label>
+                            <input type="number" id="reg-deposit" min="50" placeholder="500" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Create Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Register Account</button>
+                    </form>
+
+                    <!-- Admin Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Bank Officer Portal</h2>
+                        <div class="form-group">
+                            <label>Officer ID</label>
+                            <input type="text" id="login-admin-name" placeholder="admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Security Key</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--primary);">Login to Admin Panel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CUSTOMER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchUserTab('overview')">Account Overview</button> |
+                <button onclick="switchUserTab('transfer')">Fund Transfer</button> |
+                <button onclick="switchUserTab('transactions')">Transaction History</button>
+            </div>
+
+            <!-- TAB: OVERVIEW -->
+            <div id="user-tab-overview">
+                <div class="balance-card">
+                    <h3>Primary Savings Account</h3>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Acc No: <span id="dash-acc-num">10012345</span></p>
+                    <div class="amount" id="dash-balance">$5,240.00</div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Quick Actions</h3>
+                        <p style="margin-bottom: 1rem; color: #64748b;">Transfer funds instantly to registered beneficiaries or internal accounts.</p>
+                        <button class="btn-submit" onclick="switchUserTab('transfer')">Transfer Money Now</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Account Details</h3>
+                        <p><strong>Account Holder:</strong> <span id="dash-user-name">John Doe</span></p>
+                        <p style="margin-top:0.5rem;"><strong>Account Type:</strong> Savings Tier-1</p>
+                        <p style="margin-top:0.5rem;"><strong>Branch IFSC/Code:</strong> APEX0001092</p>
+                        <p style="margin-top:0.5rem;"><strong>Status:</strong> <span class="badge badge-success">Active</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: FUND TRANSFER -->
+            <div id="user-tab-transfer" style="display: none;">
+                <div class="card">
+                    <h2>Transfer Funds</h2>
+                    <form onsubmit="processTransfer(event)">
+                        <div class="form-group">
+                            <label>Beneficiary Account Number</label>
+                            <input type="text" id="transfer-acc" placeholder="e.g., 10098765" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Beneficiary Name</label>
+                            <input type="text" id="transfer-name" placeholder="Receiver's Full Name" required>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Amount ($)</label>
+                                <input type="number" id="transfer-amount" step="0.01" min="1" placeholder="100.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Transfer Mode</label>
+                                <select id="transfer-mode">
+                                    <option value="Instant (IMPS/Wire)">Instant Wire Transfer</option>
+                                    <option value="Standard ACH">Standard ACH (1 Business Day)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Remarks / Purpose</label>
+                            <input type="text" id="transfer-remarks" placeholder="Rent payment, invoice, etc.">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--success);">Confirm & Transfer</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: TRANSACTIONS -->
+            <div id="user-tab-transactions" style="display: none;">
+                <div class="card">
+                    <h2>Recent Transactions</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Description / Recipient</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-tx-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. BANK OFFICER (ADMIN) DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchAdminTab('accounts')">Customer Accounts</button> |
+                <button onclick="switchAdminTab('all-tx')">All System Transactions</button>
+            </div>
+
+            <!-- TAB: MANAGED ACCOUNTS -->
+            <div id="admin-tab-accounts">
+                <div class="card">
+                    <h2>Bank Accounts Overview</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Acc Number</th>
+                                <th>Account Holder</th>
+                                <th>Balance ($)</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-accounts-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: ALL TRANSACTIONS -->
+            <div id="admin-tab-all-tx" style="display: none;">
+                <div class="card">
+                    <h2>Audit Log - All Transactions</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tx ID</th>
+                                <th>Sender</th>
+                                <th>Receiver</th>
+                                <th>Amount ($)</th>
+                                <th>Timestamp</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tx-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Data State
+        let currentUser = null;
+        let userBalance = 5240.00;
+        const currentAccNum = "10012345";
+
+        let accounts = [
+            { accNum: '10012345', name: 'John Doe', balance: 5240.00, status: 'Active' },
+            { accNum: '10098765', name: 'Sarah Smith', balance: 3120.50, status: 'Active' },
+            { accNum: '10044556', name: 'Robert Johnson', balance: 850.00, status: 'Active' }
+        ];
+
+        let transactions = [
+            { id: 'TXN88210', sender: '10012345', receiver: '10098765 (Sarah)', amount: 250.00, date: '2026-08-01 10:15', type: 'Debit', status: 'Completed' },
+            { id: 'TXN88190', sender: 'Employer Corp', receiver: '10012345 (John)', amount: 1500.00, date: '2026-07-28 09:00', type: 'Credit', status: 'Completed' }
+        ];
+
+        // UI View Switcher
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('user-tab-overview').style.display = 'none';
+            document.getElementById('user-tab-transfer').style.display = 'none';
+            document.getElementById('user-tab-transactions').style.display = 'none';
+
+            if (tab === 'overview') document.getElementById('user-tab-overview').style.display = 'block';
+            if (tab === 'transfer') document.getElementById('user-tab-transfer').style.display = 'block';
+            if (tab === 'transactions') {
+                document.getElementById('user-tab-transactions').style.display = 'block';
+                renderUserTransactions();
+            }
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-accounts').style.display = 'none';
+            document.getElementById('admin-tab-all-tx').style.display = 'none';
+
+            if (tab === 'accounts') {
+                document.getElementById('admin-tab-accounts').style.display = 'block';
+                renderAdminAccounts();
+            }
+            if (tab === 'all-tx') {
+                document.getElementById('admin-tab-all-tx').style.display = 'block';
+                renderAdminTransactions();
+            }
+        }
+
+        // Auth Handlers
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                currentUser = { name: "John Doe", accNum: currentAccNum, role: 'Customer' };
+                document.getElementById('user-display-name').textContent = `Customer: ${currentUser.name}`;
+                updateBalanceDisplay();
+                showView('view-user-dashboard');
+            } else {
+                currentUser = { name: "Officer Admin", role: 'Bank Officer' };
+                document.getElementById('user-display-name').textContent = `Officer: ${currentUser.name}`;
+                renderAdminAccounts();
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const deposit = parseFloat(document.getElementById('reg-deposit').value);
+            const newAccNum = '100' + Math.floor(10005 + Math.random() * 89999);
+
+            accounts.push({ accNum: newAccNum, name, balance: deposit, status: 'Active' });
+            alert(`Account registered successfully!\nYour Account Number is: ${newAccNum}`);
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('dash-balance').textContent = `$${userBalance.toFixed(2)}`;
+            const userAccObj = accounts.find(a => a.accNum === currentAccNum);
+            if(userAccObj) userAccObj.balance = userBalance;
+        }
+
+        // Transfer Logic
+        function processTransfer(e) {
+            e.preventDefault();
+            const recipientAcc = document.getElementById('transfer-acc').value;
+            const recipientName = document.getElementById('transfer-name').value;
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+            const remarks = document.getElementById('transfer-remarks').value || "Fund Transfer";
+
+            if (amount > userBalance) {
+                alert("Transaction Failed: Insufficient Account Balance.");
+                return;
+            }
+
+            // Deduct balance
+            userBalance -= amount;
+            updateBalanceDisplay();
+
+            // Record transaction
+            const now = new Date();
+            const timeStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+            const txId = 'TXN' + Math.floor(10000 + Math.random() * 90000);
+
+            transactions.unshift({
+                id: txId,
+                sender: currentAccNum,
+                receiver: `${recipientAcc} (${recipientName})`,
+                amount: amount,
+                date: timeStr,
+                type: 'Debit',
+                status: 'Completed'
+            });
+
+            alert(`Success! $${amount.toFixed(2)} transferred to ${recipientName}.\nTransaction Reference: ${txId}`);
+            
+            // Clear inputs
+            document.getElementById('transfer-acc').value = '';
+            document.getElementById('transfer-name').value = '';
+            document.getElementById('transfer-amount').value = '';
+            document.getElementById('transfer-remarks').value = '';
+
+            switchUserTab('transactions');
+        }
+
+        function renderUserTransactions() {
+            const tbody = document.getElementById('user-tx-table');
+            tbody.innerHTML = '';
+
+            transactions.forEach(t => {
+                const isDebit = t.type === 'Debit';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${t.date}</td>
+                        <td>${t.receiver}</td>
+                        <td><span class="badge ${isDebit ? 'badge-danger' : 'badge-success'}">${t.type}</span></td>
+                        <td style="font-weight:bold; color: ${isDebit ? 'var(--danger)' : 'var(--success)'};">
+                            ${isDebit ? '-' : '+'}$${t.amount.toFixed(2)}
+                        </td>
+                        <td><span class="badge badge-success">${t.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Admin Render Logic
+        function renderAdminAccounts() {
+            const tbody = document.getElementById('admin-accounts-table');
+            tbody.innerHTML = '';
+
+            accounts.forEach(a => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${a.accNum}</strong></td>
+                        <td>${a.name}</td>
+                        <td>$${a.balance.toFixed(2)}</td>
+                        <td><span class="badge badge-success">${a.status}</span></td>
+                        <td>
+                            <button onclick="toggleAccountStatus('${a.accNum}')" style="padding:0.3rem 0.6rem; border:none; background:#e2e8f0; border-radius:4px; cursor:pointer;">
+                                Toggle Status
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminTransactions() {
+            const tbody = document.getElementById('admin-tx-table');
+            tbody.innerHTML = '';
+
+            transactions.forEach(t => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${t.id}</strong></td>
+                        <td>${t.sender}</td>
+                        <td>${t.receiver}</td>
+                        <td>$${t.amount.toFixed(2)}</td>
+                        <td>${t.date}</td>
+                        <td><span class="badge badge-success">${t.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function toggleAccountStatus(accNum) {
+            const acc = accounts.find(a => a.accNum === accNum);
+            if (acc) {
+                acc.status = acc.status === 'Active' ? 'Frozen' : 'Active';
+                renderAdminAccounts();
+            }
+        }
+    </script>
+</body>
+</html>

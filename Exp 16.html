@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamVerse - Movie & TV Show Streaming Platform (Exp 16)</title>
+    <style>
+        :root {
+            --primary: #e50914;
+            --primary-hover: #b9090b;
+            --secondary: #141414;
+            --card-bg: #181818;
+            --bg: #0f0f0f;
+            --border: #333333;
+            --text: #ffffff;
+            --text-light: #aaaaaa;
+            --accent: #e50914;
+            --success: #46d369;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .logout-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover { background-color: var(--primary-hover); }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Auth Styles */
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            max-width: 460px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            background: #2b2b2b;
+            color: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 1px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-links button.active {
+            color: var(--primary);
+        }
+
+        /* Movie Grid & Video Player */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .media-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .media-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+        }
+
+        .media-poster {
+            width: 100%;
+            height: 280px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .media-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #ffc107;
+        }
+
+        .media-details {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .media-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .media-meta {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .video-player-container {
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .video-mock {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #111111, #222222);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .play-icon {
+            font-size: 4rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .play-icon:hover {
+            transform: scale(1.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th { background-color: #222; }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-info { background-color: var(--primary); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .video-mock { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">🎬 StreamVerse</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome, Subscriber</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">User Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Admin Portal</button>
+                    </div>
+
+                    <!-- Subscriber Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Sign In to Stream</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-email" placeholder="user@streamverse.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Start Watching</button>
+                    </form>
+
+                    <!-- User Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Create Subscription</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" required placeholder="Jane Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Subscription Plan</label>
+                            <select id="reg-plan">
+                                <option value="Basic HD - $9.99/mo">Basic HD - $9.99/mo</option>
+                                <option value="Standard 1080p - $13.99/mo">Standard 1080p - $13.99/mo</option>
+                                <option value="Premium 4K HDR - $17.99/mo">Premium 4K HDR - $17.99/mo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" required placeholder="jane@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Subscribe & Register</button>
+                    </form>
+
+                    <!-- Admin Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Content Admin Login</h2>
+                        <div class="form-group">
+                            <label>Admin ID</label>
+                            <input type="text" id="login-admin-name" placeholder="admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Secret Key</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: #333;">Login to Admin Panel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. USER / SUBSCRIBER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="nav-catalog-btn" class="active" onclick="switchUserTab('catalog')">Browse Catalog</button> |
+                <button id="nav-watchlist-btn" onclick="switchUserTab('watchlist')">My Watchlist (<span id="watchlist-count">0</span>)</button>
+            </div>
+
+            <!-- MEDIA PLAYER SECTION -->
+            <div id="player-modal" class="video-player-container" style="display: none;">
+                <div class="video-mock" id="video-display">
+                    <div class="play-icon" onclick="togglePlayState()">▶</div>
+                    <h2 id="now-playing-title" style="border:none;">Now Playing Movie</h2>
+                    <p id="now-playing-genre" style="color:var(--text-light);">Genre | Duration</p>
+                    <small id="playback-status" style="margin-top: 1rem; color: var(--success);">Click play to simulate streaming video player...</small>
+                </div>
+                <div style="padding:1rem; background:#181818; display:flex; justify-content:space-between; align-items:center;">
+                    <button class="logout-btn" style="background:#444;" onclick="closePlayer()">Close Player</button>
+                    <button class="btn-submit" id="add-watchlist-btn" style="width:auto;" onclick="toggleCurrentWatchlist()">+ Add to Watchlist</button>
+                </div>
+            </div>
+
+            <!-- TAB: BROWSE CATALOG -->
+            <div id="user-tab-catalog">
+                <div class="card">
+                    <div class="grid-2">
+                        <input type="text" id="media-search" placeholder="Search title, genre, actor..." onkeyup="filterMedia()">
+                        <select id="media-category" onchange="filterMedia()">
+                            <option value="All">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Comedy">Comedy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="media-grid" id="media-catalog-grid">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- TAB: MY WATCHLIST -->
+            <div id="user-tab-watchlist" style="display: none;">
+                <div class="card">
+                    <h2>My Saved Watchlist</h2>
+                    <div class="media-grid" id="user-watchlist-grid">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchAdminTab('content')">Manage Media Library</button> |
+                <button onclick="switchAdminTab('subscribers')">Subscriber Management</button>
+            </div>
+
+            <!-- TAB: MANAGE CONTENT -->
+            <div id="admin-tab-content">
+                <div class="card">
+                    <h2>Add New Movie / TV Show</h2>
+                    <form onsubmit="addMedia(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" id="adm-title" placeholder="Inception" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Genre</label>
+                                <select id="adm-genre">
+                                    <option value="Action">Action</option>
+                                    <option value="Sci-Fi">Sci-Fi</option>
+                                    <option value="Drama">Drama</option>
+                                    <option value="Comedy">Comedy</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Rating (e.g. 8.8)</label>
+                                <input type="text" id="adm-rating" placeholder="8.8" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cover Emoji Poster</label>
+                                <input type="text" id="adm-icon" placeholder="🚀" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration / Seasons</label>
+                            <input type="text" id="adm-duration" placeholder="2h 28m or 3 Seasons" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Publish Media Content</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Streaming Library Overview</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Poster & Title</th>
+                                <th>Genre</th>
+                                <th>Duration</th>
+                                <th>IMDb Rating</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-media-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: SUBSCRIBERS -->
+            <div id="admin-tab-subscribers" style="display: none;">
+                <div class="card">
+                    <h2>Active Subscriber Accounts</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subscriber Email</th>
+                                <th>Plan Type</th>
+                                <th>Status</th>
+                                <th>Watchlist Items</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-subscriber-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Platform State
+        let currentUser = null;
+        let activePlayingMedia = null;
+        let isPlaying = false;
+
+        let mediaList = [
+            { id: 1, title: 'Cyberpunk 2099', genre: 'Sci-Fi', rating: '8.9', duration: '2h 15m', icon: '🤖', desc: 'A futuristic thriller exploring artificial intelligence and cybernetic evolution.' },
+            { id: 2, title: 'The Last Frontier', genre: 'Action', rating: '8.4', duration: '1h 58m', icon: '🌋', desc: 'An exhilarating survival story set in uncharted wilderness.' },
+            { id: 3, title: 'Quantum Heist', genre: 'Action', rating: '7.9', duration: '2h 05m', icon: '💎', desc: 'Master thieves attempt an impossible heist breaking the laws of physics.' },
+            { id: 4, title: 'Shadows of the Past', genre: 'Drama', rating: '9.1', duration: '4 Seasons', icon: '🕵️‍♂️', desc: 'An award-winning mystery series following an investigator across decades.' }
+        ];
+
+        let watchlist = [];
+
+        // Navigation Controllers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('user-tab-catalog').style.display = 'none';
+            document.getElementById('user-tab-watchlist').style.display = 'none';
+            document.getElementById('nav-catalog-btn').classList.remove('active');
+            document.getElementById('nav-watchlist-btn').classList.remove('active');
+
+            if (tab === 'catalog') {
+                document.getElementById('user-tab-catalog').style.display = 'block';
+                document.getElementById('nav-catalog-btn').classList.add('active');
+            } else if (tab === 'watchlist') {
+                document.getElementById('user-tab-watchlist').style.display = 'block';
+                document.getElementById('nav-watchlist-btn').classList.add('active');
+                renderWatchlist();
+            }
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-content').style.display = 'none';
+            document.getElementById('admin-tab-subscribers').style.display = 'none';
+
+            if (tab === 'content') {
+                document.getElementById('admin-tab-content').style.display = 'block';
+                renderAdminMedia();
+            } else if (tab === 'subscribers') {
+                document.getElementById('admin-tab-subscribers').style.display = 'block';
+                renderAdminSubscribers();
+            }
+        }
+
+        // Authentication Handlers
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-email').value || "user@streamverse.com";
+                currentUser = { name: "Jane Doe", email, plan: "Standard 1080p", role: 'Subscriber' };
+                document.getElementById('user-display-name').textContent = `Subscriber: ${currentUser.name}`;
+                renderCatalog();
+                showView('view-user-dashboard');
+            } else {
+                const adminName = document.getElementById('login-admin-name').value || "Admin";
+                currentUser = { name: adminName, role: 'Admin' };
+                document.getElementById('user-display-name').textContent = `Admin: ${currentUser.name}`;
+                renderAdminMedia();
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Subscription Activated! Please log in to start watching.');
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            closePlayer();
+            showView('view-auth');
+        }
+
+        // Catalog & Media Player Logic
+        function renderCatalog(items = mediaList) {
+            const grid = document.getElementById('media-catalog-grid');
+            grid.innerHTML = '';
+
+            items.forEach(m => {
+                grid.innerHTML += `
+                    <div class="media-card">
+                        <div class="media-poster">
+                            ${m.icon}
+                            <span class="media-badge">★ ${m.rating}</span>
+                        </div>
+                        <div class="media-details">
+                            <div class="media-title">${m.title}</div>
+                            <div class="media-meta">${m.genre} • ${m.duration}</div>
+                            <button class="btn-submit" onclick="playMedia(${m.id})">Watch Now</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterMedia() {
+            const search = document.getElementById('media-search').value.toLowerCase();
+            const genre = document.getElementById('media-category').value;
+
+            const filtered = mediaList.filter(m => {
+                const matchesSearch = m.title.toLowerCase().includes(search) || m.desc.toLowerCase().includes(search);
+                const matchesGenre = genre === 'All' || m.genre === genre;
+                return matchesSearch && matchesGenre;
+            });
+
+            renderCatalog(filtered);
+        }
+
+        function playMedia(id) {
+            activePlayingMedia = mediaList.find(m => m.id === id);
+            document.getElementById('now-playing-title').textContent = activePlayingMedia.title;
+            document.getElementById('now-playing-genre').textContent = `${activePlayingMedia.genre} | ${activePlayingMedia.duration}`;
+            
+            isPlaying = true;
+            document.getElementById('playback-status').textContent = '▶ Playing content in 1080p HD...';
+            
+            updateWatchlistBtn();
+            document.getElementById('player-modal').style.display = 'block';
+            document.getElementById('player-modal').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function togglePlayState() {
+            isPlaying = !isPlaying;
+            document.getElementById('playback-status').textContent = isPlaying 
+                ? '▶ Playing content in 1080p HD...' 
+                : '⏸ Stream Paused';
+        }
+
+        function closePlayer() {
+            document.getElementById('player-modal').style.display = 'none';
+            activePlayingMedia = null;
+        }
+
+        function toggleCurrentWatchlist() {
+            if (!activePlayingMedia) return;
+            
+            const index = watchlist.findIndex(id => id === activePlayingMedia.id);
+            if (index > -1) {
+                watchlist.splice(index, 1);
+            } else {
+                watchlist.push(activePlayingMedia.id);
+            }
+
+            document.getElementById('watchlist-count').textContent = watchlist.length;
+            updateWatchlistBtn();
+        }
+
+        function updateWatchlistBtn() {
+            const inWatchlist = watchlist.includes(activePlayingMedia?.id);
+            const btn = document.getElementById('add-watchlist-btn');
+            btn.textContent = inWatchlist ? '✓ In Watchlist' : '+ Add to Watchlist';
+            btn.style.background = inWatchlist ? 'var(--success)' : 'var(--primary)';
+        }
+
+        function renderWatchlist() {
+            const grid = document.getElementById('user-watchlist-grid');
+            grid.innerHTML = '';
+
+            const savedItems = mediaList.filter(m => watchlist.includes(m.id));
+
+            if (savedItems.length === 0) {
+                grid.innerHTML = '<p style="color:var(--text-light); grid-column: 1/-1;">Your watchlist is currently empty.</p>';
+                return;
+            }
+
+            savedItems.forEach(m => {
+                grid.innerHTML += `
+                    <div class="media-card">
+                        <div class="media-poster">
+                            ${m.icon}
+                            <span class="media-badge">★ ${m.rating}</span>
+                        </div>
+                        <div class="media-details">
+                            <div class="media-title">${m.title}</div>
+                            <div class="media-meta">${m.genre} • ${m.duration}</div>
+                            <button class="btn-submit" onclick="playMedia(${m.id})">Watch Now</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Admin Management Logic
+        function addMedia(e) {
+            e.preventDefault();
+            const title = document.getElementById('adm-title').value;
+            const genre = document.getElementById('adm-genre').value;
+            const rating = document.getElementById('adm-rating').value;
+            const icon = document.getElementById('adm-icon').value || '🍿';
+            const duration = document.getElementById('adm-duration').value;
+
+            mediaList.push({
+                id: mediaList.length + 1,
+                title, genre, rating, duration, icon, desc: 'Newly released title on StreamVerse.'
+            });
+
+            alert(`"${title}" published to streaming platform!`);
+            e.target.reset();
+            renderAdminMedia();
+        }
+
+        function deleteMedia(id) {
+            mediaList = mediaList.filter(m => m.id !== id);
+            renderAdminMedia();
+        }
+
+        function renderAdminMedia() {
+            const tbody = document.getElementById('admin-media-table');
+            tbody.innerHTML = '';
+
+            mediaList.forEach(m => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${m.icon} ${m.title}</strong></td>
+                        <td>${m.genre}</td>
+                        <td>${m.duration}</td>
+                        <td>★ ${m.rating}</td>
+                        <td><button class="logout-btn" onclick="deleteMedia(${m.id})">Remove</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminSubscribers() {
+            const tbody = document.getElementById('admin-subscriber-table');
+            tbody.innerHTML = '';
+
+            tbody.innerHTML = `
+                <tr>
+                    <td>jane@example.com</td>
+                    <td>Standard 1080p ($13.99/mo)</td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td>${watchlist.length} Saved</td>
+                </tr>
+                <tr>
+                    <td>alex@example.com</td>
+                    <td>Premium 4K HDR ($17.99/mo)</td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td>4 Saved</td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>

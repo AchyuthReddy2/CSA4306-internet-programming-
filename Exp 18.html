@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyToll - Automated Toll Gate Payment & eTicket Portal (Exp 18)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover { opacity: 0.9; }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Auth Styles */
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 460px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-links button.active { color: var(--primary); }
+
+        /* Wallet & Stats Display */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-warning { background-color: var(--accent); }
+        .badge-danger { background-color: var(--danger); }
+
+        /* QR Modal & Ticket UI */
+        .qr-ticket-box {
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            background: #eff6ff;
+            margin-top: 1rem;
+        }
+
+        .qr-code-display {
+            width: 140px;
+            height: 140px;
+            background: #000;
+            margin: 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            border-radius: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">🚗 EasyToll Express Pass</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome, Driver</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Driver Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Admin Portal</button>
+                    </div>
+
+                    <!-- Driver Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Driver Portal Login</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-email" placeholder="driver@easytoll.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Login & Access Pass</button>
+                    </form>
+
+                    <!-- User Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Register Toll Account</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" required placeholder="Robert Chen">
+                        </div>
+                        <div class="form-group">
+                            <label>Vehicle Number</label>
+                            <input type="text" required placeholder="TN-09-AB-1234">
+                        </div>
+                        <div class="form-group">
+                            <label>Vehicle Type</label>
+                            <select id="reg-vtype">
+                                <option value="Car / Jeep / Van">Car / Jeep / Van</option>
+                                <option value="LCV (Light Commercial)">LCV (Light Commercial)</option>
+                                <option value="Bus / Truck (2 Axle)">Bus / Truck (2 Axle)</option>
+                                <option value="Heavy Construction Vehicle">Heavy Construction Vehicle</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" required placeholder="robert@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Register Account</button>
+                    </form>
+
+                    <!-- Admin Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Toll Plaza Admin Login</h2>
+                        <div class="form-group">
+                            <label>Admin ID</label>
+                            <input type="text" id="login-admin-name" placeholder="admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Passcode</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Login to Toll Control</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DRIVER / USER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">eWallet Balance</span>
+                    <span class="stat-value" id="user-wallet-balance">$150.00</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Registered Vehicle</span>
+                    <span class="stat-value" id="user-vehicle-num" style="font-size: 1.3rem;">TN-09-AB-1234</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Active Pass Status</span>
+                    <span class="stat-value" style="color: var(--success); font-size: 1.3rem;">Approved ✓</span>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <button id="nav-buy-btn" class="active" onclick="switchUserTab('buy')">Buy Toll eTicket</button> |
+                <button id="nav-wallet-btn" onclick="switchUserTab('wallet')">Add Money (eWallet)</button> |
+                <button id="nav-tickets-btn" onclick="switchUserTab('tickets')">My Toll Passes & QR</button>
+            </div>
+
+            <!-- TAB: BUY TOLL ETICKET -->
+            <div id="user-tab-buy">
+                <div class="card">
+                    <h2>Purchase Advance Toll Pass</h2>
+                    <form onsubmit="buyTollTicket(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Select Highway Toll Plaza</label>
+                                <select id="buy-plaza-select" onchange="calculateTollFee()">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Trip Type</label>
+                                <select id="buy-trip-type" onchange="calculateTollFee()">
+                                    <option value="Single">Single Journey</option>
+                                    <option value="Return">Return Journey (24 Hours)</option>
+                                    <option value="Monthly">Monthly Pass (Unlimited)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Calculated Toll Fee</label>
+                                <input type="text" id="buy-calculated-fee" value="$5.00" readonly style="font-weight: bold; color: var(--primary);">
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Method</label>
+                                <select id="buy-pay-method">
+                                    <option value="eWallet">EasyToll eWallet Balance</option>
+                                    <option value="Credit Card">Saved Credit / Debit Card</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Pay Toll & Generate QR Code</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: WALLET TOP-UP -->
+            <div id="user-tab-wallet" style="display: none;">
+                <div class="card">
+                    <h2>Top Up EasyToll eWallet</h2>
+                    <form onsubmit="topUpWallet(event)">
+                        <div class="form-group">
+                            <label>Enter Top Up Amount ($)</label>
+                            <input type="number" id="wallet-topup-amount" min="10" step="5" value="50" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Gateway</label>
+                            <select>
+                                <option value="Card">Credit / Debit Card</option>
+                                <option value="UPI">Instant UPI / NetBanking</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Money to eWallet</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: MY TICKETS & QR CODE -->
+            <div id="user-tab-tickets" style="display: none;">
+                <div class="card">
+                    <h2>Active Toll eTickets & Digital Passes</h2>
+                    <div id="user-tickets-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchAdminTab('plazas')">Create / Manage Toll Details</button> |
+                <button onclick="switchAdminTab('approvals')">Approve Toll Passes</button> |
+                <button onclick="switchAdminTab('users')">Manage Users & Passes</button>
+            </div>
+
+            <!-- TAB: CREATE TOLL DETAILS -->
+            <div id="admin-tab-plazas">
+                <div class="card">
+                    <h2>Create New Toll Plaza / Rate Details</h2>
+                    <form onsubmit="addTollPlaza(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Toll Plaza Name</label>
+                                <input type="text" id="adm-plaza-name" placeholder="ECR Highway Toll Gate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Highway / Location</label>
+                                <input type="text" id="adm-plaza-loc" placeholder="NH-45 Express" required>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Single Journey Fee ($)</label>
+                                <input type="number" id="adm-fee-single" value="5.00" step="0.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Return Journey Fee ($)</label>
+                                <input type="number" id="adm-fee-return" value="8.50" step="0.5" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Create Toll Gate</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Active Toll Gate Directories</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Plaza Name</th>
+                                <th>Location</th>
+                                <th>Single Rate</th>
+                                <th>Return Rate</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-plaza-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: APPROVE PASSES -->
+            <div id="admin-tab-approvals" style="display: none;">
+                <div class="card">
+                    <h2>Pending Toll Pass Applications</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pass Ref</th>
+                                <th>Driver Name</th>
+                                <th>Vehicle No</th>
+                                <th>Plaza</th>
+                                <th>Pass Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-approvals-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: MANAGE USERS -->
+            <div id="admin-tab-users" style="display: none;">
+                <div class="card">
+                    <h2>Registered Toll Users Directory</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Vehicle Reg No</th>
+                                <th>Vehicle Class</th>
+                                <th>Wallet Balance</th>
+                                <th>Toll Account Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Platform State
+        let currentUser = null;
+        let walletBalance = 150.00;
+
+        let tollPlazas = [
+            { id: 1, name: 'NH-45 Chengalpattu Toll', loc: 'Chennai Outer Ring', single: 5.00, return: 8.50 },
+            { id: 2, name: 'ECR Kovalam Express Toll', loc: 'East Coast Highway', single: 4.00, return: 6.50 },
+            { id: 3, name: 'Elevated Expressway Plaza', loc: 'Bengaluru Route', single: 7.50, return: 12.00 }
+        ];
+
+        let activeTickets = [
+            { ref: 'TL-88219', plaza: 'NH-45 Chengalpattu Toll', tripType: 'Single Journey', amount: 5.00, qrCode: 'QR-TL-88219', status: 'Active (Valid)' }
+        ];
+
+        let pendingApprovals = [
+            { ref: 'PASS-3301', driver: 'Robert Chen', vehicle: 'TN-09-AB-1234', plaza: 'ECR Kovalam Express Toll', passType: 'Monthly Pass' },
+            { ref: 'PASS-3302', driver: 'Sarah Jenkins', vehicle: 'KA-01-MJ-9988', plaza: 'Elevated Expressway Plaza', passType: 'Monthly Pass' }
+        ];
+
+        let registeredUsers = [
+            { name: 'Robert Chen', vehicle: 'TN-09-AB-1234', vtype: 'Car / Jeep / Van', wallet: 150.00, status: 'Active Pass' },
+            { name: 'Sarah Jenkins', vehicle: 'KA-01-MJ-9988', vtype: 'LCV (Light Commercial)', wallet: 230.00, status: 'Active Pass' }
+        ];
+
+        // Navigation Controllers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('user-tab-buy').style.display = 'none';
+            document.getElementById('user-tab-wallet').style.display = 'none';
+            document.getElementById('user-tab-tickets').style.display = 'none';
+
+            document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+
+            if (tab === 'buy') {
+                document.getElementById('user-tab-buy').style.display = 'block';
+                document.getElementById('nav-buy-btn').classList.add('active');
+                populatePlazaDropdown();
+            } else if (tab === 'wallet') {
+                document.getElementById('user-tab-wallet').style.display = 'block';
+                document.getElementById('nav-wallet-btn').classList.add('active');
+            } else if (tab === 'tickets') {
+                document.getElementById('user-tab-tickets').style.display = 'block';
+                document.getElementById('nav-tickets-btn').classList.add('active');
+                renderUserTickets();
+            }
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-plazas').style.display = 'none';
+            document.getElementById('admin-tab-approvals').style.display = 'none';
+            document.getElementById('admin-tab-users').style.display = 'none';
+
+            if (tab === 'plazas') {
+                document.getElementById('admin-tab-plazas').style.display = 'block';
+                renderAdminPlazas();
+            } else if (tab === 'approvals') {
+                document.getElementById('admin-tab-approvals').style.display = 'block';
+                renderAdminApprovals();
+            } else if (tab === 'users') {
+                document.getElementById('admin-tab-users').style.display = 'block';
+                renderAdminUsers();
+            }
+        }
+
+        // Authentication Handlers
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-email').value || "driver@easytoll.com";
+                currentUser = { name: "Robert Chen", email, vehicle: "TN-09-AB-1234", role: 'Driver' };
+                document.getElementById('user-display-name').textContent = `Driver: ${currentUser.name}`;
+                document.getElementById('user-wallet-balance').textContent = `$${walletBalance.toFixed(2)}`;
+                populatePlazaDropdown();
+                showView('view-user-dashboard');
+            } else {
+                const adminName = document.getElementById('login-admin-name').value || "Admin";
+                currentUser = { name: adminName, role: 'Admin' };
+                document.getElementById('user-display-name').textContent = `Admin: ${currentUser.name}`;
+                renderAdminPlazas();
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Toll Account Registered Successfully! Please login.');
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Driver / Toll Operations
+        function populatePlazaDropdown() {
+            const select = document.getElementById('buy-plaza-select');
+            select.innerHTML = '';
+            tollPlazas.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name} (${p.loc})</option>`;
+            });
+            calculateTollFee();
+        }
+
+        function calculateTollFee() {
+            const plazaId = parseInt(document.getElementById('buy-plaza-select').value);
+            const tripType = document.getElementById('buy-trip-type').value;
+            const plaza = tollPlazas.find(p => p.id === plazaId);
+
+            if (!plaza) return;
+
+            let fee = plaza.single;
+            if (tripType === 'Return') fee = plaza.return;
+            if (tripType === 'Monthly') fee = plaza.single * 15;
+
+            document.getElementById('buy-calculated-fee').value = `$${fee.toFixed(2)}`;
+        }
+
+        function buyTollTicket(e) {
+            e.preventDefault();
+            const plazaId = parseInt(document.getElementById('buy-plaza-select').value);
+            const tripType = document.getElementById('buy-trip-type').value;
+            const plaza = tollPlazas.find(p => p.id === plazaId);
+            
+            let fee = plaza.single;
+            if (tripType === 'Return') fee = plaza.return;
+            if (tripType === 'Monthly') fee = plaza.single * 15;
+
+            if (walletBalance < fee) {
+                alert('Insufficient eWallet balance! Please top up your wallet.');
+                switchUserTab('wallet');
+                return;
+            }
+
+            walletBalance -= fee;
+            document.getElementById('user-wallet-balance').textContent = `$${walletBalance.toFixed(2)}`;
+
+            const refNum = 'TL-' + Math.floor(10000 + Math.random() * 90000);
+            activeTickets.unshift({
+                ref: refNum,
+                plaza: plaza.name,
+                tripType: `${tripType} Journey`,
+                amount: fee,
+                qrCode: `QR-${refNum}`,
+                status: 'Active (Valid)'
+            });
+
+            alert(`Toll Pass Purchased Successfully! Ticket Ref: ${refNum}`);
+            switchUserTab('tickets');
+        }
+
+        function topUpWallet(e) {
+            e.preventDefault();
+            const amt = parseFloat(document.getElementById('wallet-topup-amount').value);
+            walletBalance += amt;
+            document.getElementById('user-wallet-balance').textContent = `$${walletBalance.toFixed(2)}`;
+            alert(`$${amt.toFixed(2)} added to your EasyToll eWallet!`);
+            switchUserTab('buy');
+        }
+
+        function renderUserTickets() {
+            const container = document.getElementById('user-tickets-container');
+            container.innerHTML = '';
+
+            if (activeTickets.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-light);">No active toll passes available.</p>';
+                return;
+            }
+
+            activeTickets.forEach(t => {
+                container.innerHTML += `
+                    <div class="qr-ticket-box">
+                        <h3>${t.plaza}</h3>
+                        <p style="color:var(--text-light);">${t.tripType} | Ref: ${t.ref}</p>
+                        <div class="qr-code-display">🏁</div>
+                        <p><span class="badge badge-success">${t.status}</span></p>
+                        <small style="display:block; margin-top:0.5rem; color:var(--text-light);">Scan QR Code at Automated Toll Booth Barrier</small>
+                    </div>
+                `;
+            });
+        }
+
+        // Admin Toll Controls
+        function addTollPlaza(e) {
+            e.preventDefault();
+            const name = document.getElementById('adm-plaza-name').value;
+            const loc = document.getElementById('adm-plaza-loc').value;
+            const single = parseFloat(document.getElementById('adm-fee-single').value);
+            const ret = parseFloat(document.getElementById('adm-fee-return').value);
+
+            tollPlazas.push({
+                id: tollPlazas.length + 1,
+                name, loc, single, return: ret
+            });
+
+            alert(`Toll Gate "${name}" Created Successfully!`);
+            e.target.reset();
+            renderAdminPlazas();
+        }
+
+        function renderAdminPlazas() {
+            const tbody = document.getElementById('admin-plaza-table');
+            tbody.innerHTML = '';
+
+            tollPlazas.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.loc}</td>
+                        <td>$${p.single.toFixed(2)}</td>
+                        <td>$${p.return.toFixed(2)}</td>
+                        <td><span class="badge badge-success">Online</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminApprovals() {
+            const tbody = document.getElementById('admin-approvals-table');
+            tbody.innerHTML = '';
+
+            pendingApprovals.forEach((app, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${app.ref}</strong></td>
+                        <td>${app.driver}</td>
+                        <td>${app.vehicle}</td>
+                        <td>${app.plaza}</td>
+                        <td>${app.passType}</td>
+                        <td>
+                            <button class="btn-submit" style="padding:0.3rem 0.6rem; width:auto; background:var(--success);" onclick="approvePass(${idx})">Approve & Generate QR</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function approvePass(idx) {
+            const app = pendingApprovals[idx];
+            alert(`Approved ${app.passType} for ${app.driver} (${app.vehicle}). QR Code Generated.`);
+            pendingApprovals.splice(idx, 1);
+            renderAdminApprovals();
+        }
+
+        function renderAdminUsers() {
+            const tbody = document.getElementById('admin-users-table');
+            tbody.innerHTML = '';
+
+            registeredUsers.forEach(u => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${u.name}</strong></td>
+                        <td>${u.vehicle}</td>
+                        <td>${u.vtype}</td>
+                        <td>$${u.wallet.toFixed(2)}</td>
+                        <td><span class="badge badge-success">${u.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

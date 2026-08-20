@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings Airlines - Flight Reservation System (Exp 12)</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --secondary: #38bdf8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #cbd5e1;
+            --text: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover { background-color: #b91c1c; }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-danger { background-color: var(--danger); }
+        .badge-info { background-color: var(--accent); }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .seat-map {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            max-width: 360px;
+            margin: 1.5rem auto;
+        }
+
+        .seat {
+            aspect-ratio: 1;
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            background: white;
+            color: var(--accent);
+        }
+
+        .seat.selected {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .seat.occupied {
+            background-color: #cbd5e1;
+            color: #64748b;
+            border-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .e-ticket {
+            border: 2px dashed var(--accent);
+            background: #f0f9ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <h1>✈️ SkyWings Airlines</h1>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome, Traveler</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Passenger Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Admin Portal</button>
+                    </div>
+
+                    <!-- Passenger Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Passenger Login</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-email" placeholder="passenger@skywings.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Login & Search Flights</button>
+                    </form>
+
+                    <!-- Passenger Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Create Traveler Account</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="reg-name" required placeholder="Emily Clark">
+                        </div>
+                        <div class="form-group">
+                            <label>Passport / Government ID</label>
+                            <input type="text" required placeholder="A12345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" required placeholder="emily@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Register Account</button>
+                    </form>
+
+                    <!-- Admin Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Airline Admin Login</h2>
+                        <div class="form-group">
+                            <label>Admin ID</label>
+                            <input type="text" id="login-admin-name" placeholder="admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Security Key</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--primary);">Login to Flight Operations</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. PASSENGER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchUserTab('search')">Search Flights</button> |
+                <button onclick="switchUserTab('bookings')">My Reservations & E-Tickets</button>
+            </div>
+
+            <!-- TAB: SEARCH & BOOK -->
+            <div id="user-tab-search">
+                <div class="card">
+                    <h2>Flight Search</h2>
+                    <form onsubmit="searchFlights(event)">
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>From (Origin)</label>
+                                <select id="search-from">
+                                    <option value="New York (JFK)">New York (JFK)</option>
+                                    <option value="London (LHR)">London (LHR)</option>
+                                    <option value="Tokyo (HND)">Tokyo (HND)</option>
+                                    <option value="Dubai (DXB)">Dubai (DXB)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>To (Destination)</label>
+                                <select id="search-to">
+                                    <option value="London (LHR)">London (LHR)</option>
+                                    <option value="New York (JFK)">New York (JFK)</option>
+                                    <option value="Tokyo (HND)">Tokyo (HND)</option>
+                                    <option value="Dubai (DXB)">Dubai (DXB)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Travel Date</label>
+                                <input type="date" id="search-date" required>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Cabin Class</label>
+                                <select id="search-class">
+                                    <option value="Economy">Economy</option>
+                                    <option value="Business">Business</option>
+                                    <option value="First Class">First Class</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn-submit">Find Available Flights</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- FLIGHT RESULTS -->
+                <div id="flight-results-container" class="card" style="display: none;">
+                    <h2>Available Flights</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Flight No</th>
+                                <th>Route</th>
+                                <th>Departure & Arrival</th>
+                                <th>Seats Left</th>
+                                <th>Fare</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flights-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- SEAT SELECTION & CHECKOUT MODAL SECTION -->
+                <div id="booking-modal-section" class="card" style="display: none;">
+                    <h2>Select Seat & Checkout for <span id="selected-flight-code"></span></h2>
+                    
+                    <p style="text-align: center; margin-top:0.5rem; font-weight: 600;">Choose an Available Seat:</p>
+                    <div class="seat-map" id="seat-map">
+                        <!-- Seats generated dynamically -->
+                    </div>
+
+                    <form onsubmit="confirmBooking(event)" style="margin-top: 1.5rem;">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Passenger Name</label>
+                                <input type="text" id="pass-name" required placeholder="Full Name as on Passport">
+                            </div>
+                            <div class="form-group">
+                                <label>Selected Seat</label>
+                                <input type="text" id="pass-seat" readonly required placeholder="Click a seat above">
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Payment Gateway Option</label>
+                                <select id="pass-payment">
+                                    <option value="Credit Card">Credit / Debit Card</option>
+                                    <option value="PayPal">PayPal Wire</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Total Amount ($)</label>
+                                <input type="text" id="pass-amount" readonly style="font-weight: bold; color: var(--success);">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--success);">Pay & Generate E-Ticket</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: MY RESERVATIONS -->
+            <div id="user-tab-bookings" style="display: none;">
+                <div class="card">
+                    <h2>My Flight Bookings & E-Tickets</h2>
+                    <div id="e-tickets-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. AIRLINE ADMIN DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchAdminTab('schedules')">Manage Flight Schedules</button> |
+                <button onclick="switchAdminTab('all-bookings')">Passenger Manifest</button>
+            </div>
+
+            <!-- TAB: MANAGE SCHEDULES -->
+            <div id="admin-tab-schedules">
+                <div class="card">
+                    <h2>Add New Flight Schedule</h2>
+                    <form onsubmit="addFlight(event)">
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Flight Code</label>
+                                <input type="text" id="adm-code" placeholder="SW-902" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Origin</label>
+                                <input type="text" id="adm-from" placeholder="New York (JFK)" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Destination</label>
+                                <input type="text" id="adm-to" placeholder="London (LHR)" required>
+                            </div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Departure Time</label>
+                                <input type="time" id="adm-deptime" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Arrival Time</label>
+                                <input type="time" id="adm-arrtime" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Base Fare ($)</label>
+                                <input type="number" step="0.01" id="adm-fare" placeholder="450.00" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Schedule to Inventory</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Current Flight Inventory</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Flight No</th>
+                                <th>Route</th>
+                                <th>Schedule</th>
+                                <th>Base Fare</th>
+                                <th>Available Seats</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-inventory-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: MANIFEST -->
+            <div id="admin-tab-all-bookings" style="display: none;">
+                <div class="card">
+                    <h2>Passenger Manifest & Ticket Records</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PNR / Booking Ref</th>
+                                <th>Passenger Name</th>
+                                <th>Flight Code</th>
+                                <th>Seat No</th>
+                                <th>Fare Paid</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-manifest-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State Management
+        let currentUser = null;
+        let selectedFlight = null;
+        let selectedSeatNum = null;
+
+        let flights = [
+            { code: 'SW-101', origin: 'New York (JFK)', dest: 'London (LHR)', dep: '08:30 AM', arr: '08:45 PM', fare: 650.00, seatsLeft: 18 },
+            { code: 'SW-204', origin: 'London (LHR)', dest: 'Tokyo (HND)', dep: '11:00 AM', arr: '07:30 AM (+1)', fare: 890.00, seatsLeft: 12 },
+            { code: 'SW-309', origin: 'New York (JFK)', dest: 'Dubai (DXB)', dep: '10:15 PM', arr: '07:20 PM (+1)', fare: 720.00, seatsLeft: 22 }
+        ];
+
+        let bookings = [
+            { pnr: 'PNR7721', passenger: 'Emily Clark', flightCode: 'SW-101', route: 'New York (JFK) -> London (LHR)', date: '2026-08-15', seat: '3B', amount: 650.00, status: 'Confirmed' }
+        ];
+
+        // Set default date for flight search
+        document.getElementById('search-date').valueAsDate = new Date();
+
+        // Navigation Controllers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('user-tab-search').style.display = 'none';
+            document.getElementById('user-tab-bookings').style.display = 'none';
+
+            if (tab === 'search') document.getElementById('user-tab-search').style.display = 'block';
+            if (tab === 'bookings') {
+                document.getElementById('user-tab-bookings').style.display = 'block';
+                renderUserBookings();
+            }
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-schedules').style.display = 'none';
+            document.getElementById('admin-tab-all-bookings').style.display = 'none';
+
+            if (tab === 'schedules') {
+                document.getElementById('admin-tab-schedules').style.display = 'block';
+                renderAdminInventory();
+            }
+            if (tab === 'all-bookings') {
+                document.getElementById('admin-tab-all-bookings').style.display = 'block';
+                renderAdminManifest();
+            }
+        }
+
+        // Authentication Handlers
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-email').value || "passenger@skywings.com";
+                currentUser = { name: "Emily Clark", email, role: 'Passenger' };
+                document.getElementById('user-display-name').textContent = `Passenger: ${currentUser.name}`;
+                document.getElementById('pass-name').value = currentUser.name;
+                showView('view-user-dashboard');
+            } else {
+                const adminName = document.getElementById('login-admin-name').value || "Admin";
+                currentUser = { name: adminName, role: 'Airline Manager' };
+                document.getElementById('user-display-name').textContent = `Admin: ${currentUser.name}`;
+                renderAdminInventory();
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Registration Successful! Please log in to complete flight reservations.');
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Flight Search & Reservation Logic
+        function searchFlights(e) {
+            e.preventDefault();
+            const from = document.getElementById('search-from').value;
+            const to = document.getElementById('search-to').value;
+
+            if (from === to) {
+                alert("Origin and Destination cannot be the same.");
+                return;
+            }
+
+            const tbody = document.getElementById('flights-table-body');
+            tbody.innerHTML = '';
+
+            const matched = flights.filter(f => f.origin === from && f.dest === to);
+
+            if (matched.length === 0) {
+                // Show default mock match for demonstration purposes if strict selection matches nothing
+                const defaultFlight = flights[0];
+                tbody.innerHTML = `
+                    <tr>
+                        <td><strong>${defaultFlight.code}</strong></td>
+                        <td>${from} &rarr; ${to}</td>
+                        <td>${defaultFlight.dep} - ${defaultFlight.arr}</td>
+                        <td>${defaultFlight.seatsLeft}</td>
+                        <td>$${defaultFlight.fare.toFixed(2)}</td>
+                        <td><button class="btn-submit" style="padding:0.4rem;" onclick="initiateBooking('${defaultFlight.code}')">Select Flight</button></td>
+                    </tr>
+                `;
+            } else {
+                matched.forEach(f => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${f.code}</strong></td>
+                            <td>${f.origin} &rarr; ${f.dest}</td>
+                            <td>${f.dep} - ${f.arr}</td>
+                            <td>${f.seatsLeft}</td>
+                            <td>$${f.fare.toFixed(2)}</td>
+                            <td><button class="btn-submit" style="padding:0.4rem;" onclick="initiateBooking('${f.code}')">Select Flight</button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('flight-results-container').style.display = 'block';
+            document.getElementById('booking-modal-section').style.display = 'none';
+        }
+
+        function initiateBooking(flightCode) {
+            selectedFlight = flights.find(f => f.code === flightCode) || flights[0];
+            document.getElementById('selected-flight-code').textContent = `${selectedFlight.code} (${selectedFlight.origin} to ${selectedFlight.dest})`;
+            document.getElementById('pass-amount').value = selectedFlight.fare.toFixed(2);
+            document.getElementById('pass-seat').value = '';
+            selectedSeatNum = null;
+
+            // Generate Seat Map
+            const seatMap = document.getElementById('seat-map');
+            seatMap.innerHTML = '';
+            const seatLabels = ['1A', '1B', '1C', '2A', '2B', '2C', '3A', '3B', '3C', '4A', '4B', '4C'];
+            
+            seatLabels.forEach(s => {
+                const isOccupied = (s === '3B'); // Mock an occupied seat
+                const seatDiv = document.createElement('div');
+                seatDiv.className = `seat ${isOccupied ? 'occupied' : ''}`;
+                seatDiv.textContent = s;
+
+                if (!isOccupied) {
+                    seatDiv.onclick = function () {
+                        document.querySelectorAll('.seat').forEach(st => st.classList.remove('selected'));
+                        seatDiv.classList.add('selected');
+                        selectedSeatNum = s;
+                        document.getElementById('pass-seat').value = s;
+                    };
+                }
+                seatMap.appendChild(seatDiv);
+            });
+
+            document.getElementById('booking-modal-section').style.display = 'block';
+        }
+
+        function confirmBooking(e) {
+            e.preventDefault();
+            if (!selectedSeatNum) {
+                alert('Please select an available seat from the seat map.');
+                return;
+            }
+
+            const pnr = 'PNR' + Math.floor(1000 + Math.random() * 9000);
+            const passengerName = document.getElementById('pass-name').value;
+            const travelDate = document.getElementById('search-date').value;
+
+            bookings.push({
+                pnr,
+                passenger: passengerName,
+                flightCode: selectedFlight.code,
+                route: `${selectedFlight.origin} -> ${selectedFlight.dest}`,
+                date: travelDate,
+                seat: selectedSeatNum,
+                amount: selectedFlight.fare,
+                status: 'Confirmed'
+            });
+
+            selectedFlight.seatsLeft = Math.max(0, selectedFlight.seatsLeft - 1);
+
+            alert(`Reservation Confirmed!\nYour PNR: ${pnr}\nSeat: ${selectedSeatNum}`);
+            switchUserTab('bookings');
+        }
+
+        function renderUserBookings() {
+            const container = document.getElementById('e-tickets-container');
+            container.innerHTML = '';
+
+            const myBookings = bookings.filter(b => b.passenger === currentUser.name);
+
+            if (myBookings.length === 0) {
+                container.innerHTML = '<p style="color:#64748b;">No active flight reservations found.</p>';
+                return;
+            }
+
+            myBookings.forEach(b => {
+                container.innerHTML += `
+                    <div class="e-ticket">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3>BOARDING PASS / E-TICKET</h3>
+                            <span class="badge badge-success">${b.status}</span>
+                        </div>
+                        <hr style="margin:0.5rem 0; border:0; border-top:1px solid var(--border);">
+                        <div class="grid-2" style="margin-top:0.5rem;">
+                            <div>
+                                <p><strong>PNR / Booking Ref:</strong> ${b.pnr}</p>
+                                <p><strong>Passenger:</strong> ${b.passenger}</p>
+                                <p><strong>Flight:</strong> ${b.flightCode}</p>
+                            </div>
+                            <div>
+                                <p><strong>Route:</strong> ${b.route}</p>
+                                <p><strong>Travel Date:</strong> ${b.date}</p>
+                                <p><strong>Assigned Seat:</strong> <span style="font-size:1.1rem; color:var(--accent); font-weight:bold;">${b.seat}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Admin Controllers
+        function addFlight(e) {
+            e.preventDefault();
+            const code = document.getElementById('adm-code').value;
+            const origin = document.getElementById('adm-from').value;
+            const dest = document.getElementById('adm-to').value;
+            const dep = document.getElementById('adm-deptime').value;
+            const arr = document.getElementById('adm-arrtime').value;
+            const fare = parseFloat(document.getElementById('adm-fare').value);
+
+            flights.push({
+                code, origin, dest, dep, arr, fare, seatsLeft: 24
+            });
+
+            alert(`Flight Schedule ${code} added to inventory.`);
+            renderAdminInventory();
+        }
+
+        function renderAdminInventory() {
+            const tbody = document.getElementById('admin-inventory-table');
+            tbody.innerHTML = '';
+
+            flights.forEach(f => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${f.code}</strong></td>
+                        <td>${f.origin} &rarr; ${f.dest}</td>
+                        <td>${f.dep} - ${f.arr}</td>
+                        <td>$${f.fare.toFixed(2)}</td>
+                        <td>${f.seatsLeft}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminManifest() {
+            const tbody = document.getElementById('admin-manifest-table');
+            tbody.innerHTML = '';
+
+            bookings.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${b.pnr}</strong></td>
+                        <td>${b.passenger}</td>
+                        <td>${b.flightCode}</td>
+                        <td>${b.seat}</td>
+                        <td>$${b.amount.toFixed(2)}</td>
+                        <td><span class="badge badge-success">${b.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

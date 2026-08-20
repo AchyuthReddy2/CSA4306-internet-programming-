@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCure - Animal Health & Veterinary Services Portal</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-hover: #047857;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --accent: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #34d399;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .nav-links button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-warning { background-color: var(--accent); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .disease-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            background: #f8fafc;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .disease-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">🐾 VetCure Animal Health Portal</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">User Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">User Reg</button>
+                        <button class="tab-btn" onclick="switchAuthTab('doctor-login')">Doctor Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('doctor-register')">Doctor Reg</button>
+                    </div>
+
+                    <!-- User Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">User / Farmer Portal</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-user-email" value="farmer@vetcure.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="password" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Login as User</button>
+                    </form>
+
+                    <!-- User Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Register User / Farmer</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="John Farmer" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Area / Location</label>
+                            <input type="text" placeholder="North Region" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Register Account</button>
+                    </form>
+
+                    <!-- Doctor Login -->
+                    <form id="form-doctor-login" style="display: none;" onsubmit="handleAuth(event, 'doctor')">
+                        <h2 style="border:none; text-align:center;">Veterinary Doctor Portal</h2>
+                        <div class="form-group">
+                            <label>Doctor Email</label>
+                            <input type="email" id="login-doctor-email" value="dr.smith@vetcure.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="password" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Login as Doctor</button>
+                    </form>
+
+                    <!-- Doctor Registration -->
+                    <form id="form-doctor-register" style="display: none;" onsubmit="handleRegister(event, 'doctor')">
+                        <h2 style="border:none; text-align:center;">Register Vet Doctor</h2>
+                        <div class="form-group">
+                            <label>Doctor Full Name</label>
+                            <input type="text" placeholder="Dr. Sarah Smith" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Clinic Type</label>
+                            <select id="doc-reg-clinic">
+                                <option value="Govt. CVH (Free)">Govt. CVH (Free Subscription)</option>
+                                <option value="Private Clinic (Paid)">Private Clinic (Fee Required)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bank Account Info</label>
+                            <input type="text" placeholder="National Bank - A/C 11223344" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Easy Paisa Account Info</label>
+                            <input type="text" placeholder="0300-1234567" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="dr.smith@vetcure.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Register Doctor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. USER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="u-nav-complaint" class="active" onclick="switchUserTab('complaint')">Post Complaint</button>
+                <button id="u-nav-status" onclick="switchUserTab('status')">My Complaint Status</button>
+                <button id="u-nav-vetcure" onclick="switchUserTab('vetcure')">View Vetcure Details</button>
+                <button id="u-nav-news" onclick="switchUserTab('news')">View News</button>
+                <button id="u-nav-doctor" onclick="switchUserTab('doctor')">View Doctor</button>
+                <button id="u-nav-report" onclick="switchUserTab('report')">View Report</button>
+                <button id="u-nav-feedback" onclick="switchUserTab('feedback')">Post Feedback</button>
+                <button id="u-nav-payment" onclick="switchUserTab('payment')">Make Payment</button>
+                <button id="u-nav-profile" onclick="switchUserTab('profile')">My Profile</button>
+            </div>
+
+            <!-- Post Complaint -->
+            <div id="user-tab-complaint">
+                <div class="card">
+                    <h2>Post Complaint</h2>
+                    <form onsubmit="postComplaint(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Animal Type</label>
+                                <select id="cmp-animal">
+                                    <option value="Cow / Cattle">Cow / Cattle</option>
+                                    <option value="Buffalo">Buffalo</option>
+                                    <option value="Goat / Sheep">Goat / Sheep</option>
+                                    <option value="Dog / Pet">Dog / Pet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Area / Location</label>
+                                <input type="text" id="cmp-area" value="North Region" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Complaint / Symptoms Description</label>
+                            <textarea id="cmp-desc" rows="3" placeholder="Describe symptoms (e.g. fever, skin lesions, loss of appetite)..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Complaint</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Complaint Status -->
+            <div id="user-tab-status" style="display: none;">
+                <div class="card">
+                    <h2>My Complaint Status</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref ID</th>
+                                <th>Animal</th>
+                                <th>Complaint Details</th>
+                                <th>Doctor Solution</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-complaints-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- View Vetcure Details -->
+            <div id="user-tab-vetcure" style="display: none;">
+                <div class="card">
+                    <h2>View Vetcure Details</h2>
+                    <p style="margin-bottom: 1rem; color: var(--text-light);">General Vetcure animal health services, helpline, and diagnostic services.</p>
+                    <div class="grid-2">
+                        <div class="card" style="margin-bottom:0;">
+                            <h3>🏢 Central Vetcure Hub</h3>
+                            <p><strong>Emergency Contact:</strong> 1800-VETCURE</p>
+                            <p><strong>Operating Hours:</strong> 24/7 Support</p>
+                        </div>
+                        <div class="card" style="margin-bottom:0;">
+                            <h3>💉 Mobile Vaccination Unit</h3>
+                            <p><strong>Coverage:</strong> All Rural & Urban Regions</p>
+                            <p><strong>Services:</strong> Free Routine Checkups</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View News -->
+            <div id="user-tab-news" style="display: none;">
+                <div class="card">
+                    <h2>Animal Health News & Advisories</h2>
+                    <div id="news-container"></div>
+                </div>
+            </div>
+
+            <!-- View Doctor -->
+            <div id="user-tab-doctor" style="display: none;">
+                <div class="card">
+                    <h2>Available Veterinary Doctors</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Doctor Name</th>
+                                <th>Clinic Type</th>
+                                <th>Subscription</th>
+                                <th>Bank Details</th>
+                                <th>Easy Paisa Details</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-doctors-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- View Report (Disease Analysis) -->
+            <div id="user-tab-report" style="display: none;">
+                <div class="card">
+                    <h2>Disease Area Analysis Report</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">Automated analysis based on recorded data showing which disease attacks pets/animals mostly in specific areas.</p>
+                    <div class="card" style="background:#eff6ff; border-color:#bfdbfe;">
+                        <h3>📊 High Risk Disease Analysis by Area</h3>
+                        <div id="disease-report-content" style="margin-top:0.5rem;">
+                            <p><strong>North Region:</strong> Foot and Mouth Disease (FMD) attacks cattle/pets mostly in this area (65% of recorded cases).</p>
+                            <p style="margin-top:0.3rem;"><strong>South District:</strong> Parvovirus attack prevalence observed in pets (40% of cases).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Feedback -->
+            <div id="user-tab-feedback" style="display: none;">
+                <div class="card">
+                    <h2>Post Service Feedback</h2>
+                    <form onsubmit="postFeedback(event)">
+                        <div class="form-group">
+                            <label>Your Feedback Message</label>
+                            <textarea id="fb-msg" rows="3" required placeholder="Write your experience regarding treatment or portal service..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Make Payment -->
+            <div id="user-tab-payment" style="display: none;">
+                <div class="card">
+                    <h2>Make Payment</h2>
+                    <form onsubmit="makePayment(event)">
+                        <div class="form-group">
+                            <label>Select Private Doctor</label>
+                            <select id="pay-doc-select">
+                                <option value="Dr. Sarah Smith">Dr. Sarah Smith ($15.00 Subscription Fee)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Gateway</label>
+                            <select id="pay-gateway">
+                                <option value="Bank Transfer">Bank Transfer (Direct Doctor Bank A/C)</option>
+                                <option value="Easy Paisa">Easy Paisa Mobile Account</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Transaction Ref / Proof ID</label>
+                            <input type="text" id="pay-ref" placeholder="TXN-998877" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Payment</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Profile -->
+            <div id="user-tab-profile" style="display: none;">
+                <div class="card">
+                    <h2>My Profile</h2>
+                    <div id="user-profile-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DOCTOR DASHBOARD -->
+        <div id="view-doctor-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="d-nav-complaint" class="active" onclick="switchDocTab('complaint')">View Complaint</button>
+                <button id="d-nav-cure" onclick="switchDocTab('cure')">Manage Cure</button>
+                <button id="d-nav-news" onclick="switchDocTab('news')">Manage News</button>
+                <button id="d-nav-users" onclick="switchDocTab('users')">View User Details</button>
+                <button id="d-nav-payments" onclick="switchDocTab('payments')">View Payment Details</button>
+                <button id="d-nav-feedback" onclick="switchDocTab('feedback')">Feedback Details</button>
+            </div>
+
+            <!-- View Complaint & Post Solution -->
+            <div id="doc-tab-complaint">
+                <div class="card">
+                    <h2>View Complaints & Provide Solution</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Animal</th>
+                                <th>Area</th>
+                                <th>Complaint</th>
+                                <th>Solution / Prescription</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-complaints-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Manage Cure -->
+            <div id="doc-tab-cure" style="display: none;">
+                <div class="card">
+                    <h2>Manage Cure (Diseases & Prescriptions)</h2>
+                    <p style="color:var(--text-light); margin-bottom: 1rem;">Images of influenced animals with basic diseases and their prescriptions.</p>
+                    <div class="grid-2">
+                        <div class="disease-card">
+                            <div class="disease-img">🐄</div>
+                            <div>
+                                <h4>Foot & Mouth Disease (FMD)</h4>
+                                <p style="font-size:0.85rem; color:var(--text-light);"><strong>Prescription:</strong> Antiseptic wash, fever reducers & isolation.</p>
+                            </div>
+                        </div>
+                        <div class="disease-card">
+                            <div class="disease-img">🐕</div>
+                            <div>
+                                <h4>Canine Parvovirus</h4>
+                                <p style="font-size:0.85rem; color:var(--text-light);"><strong>Prescription:</strong> IV hydration fluids, antibiotics & anti-emetics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage News -->
+            <div id="doc-tab-news" style="display: none;">
+                <div class="card">
+                    <h2>Manage News & Health Advisories</h2>
+                    <form onsubmit="postNews(event)">
+                        <div class="form-group">
+                            <label>News Headline</label>
+                            <input type="text" id="news-title" placeholder="Seasonal Cattle Vaccination Alert" required>
+                        </div>
+                        <div class="form-group">
+                            <label>News Content</label>
+                            <textarea id="news-content" rows="3" placeholder="Enter advisory details..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Publish News</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- View User Details -->
+            <div id="doc-tab-users" style="display: none;">
+                <div class="card">
+                    <h2>Registered User / Farmer Details</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Area</th>
+                                <th>Subscription Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-users-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- View Payment Details -->
+            <div id="doc-tab-payments" style="display: none;">
+                <div class="card">
+                    <h2>Received Payment Details</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Txn Ref</th>
+                                <th>User Name</th>
+                                <th>Payment Gateway</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-payments-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Feedback Details -->
+            <div id="doc-tab-feedback" style="display: none;">
+                <div class="card">
+                    <h2>User Feedback Details</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Feedback Message</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-feedback-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Platform Data State
+        let currentUser = null;
+
+        let complaints = [
+            { id: 101, animal: 'Cow / Cattle', area: 'North Region', desc: 'High fever and mouth blisters.', solution: 'Pending Doctor Review', status: 'Pending' }
+        ];
+
+        let doctors = [
+            { name: 'Dr. Ahmad Govt', clinic: 'Govt. CVH (Free)', fee: 'Free', bank: 'Govt Treasury A/C', easypaisa: 'N/A' },
+            { name: 'Dr. Sarah Smith', clinic: 'Private Clinic (Paid)', fee: '$15.00', bank: 'National Bank - A/C 11223344', easypaisa: '0300-1234567' }
+        ];
+
+        let newsList = [
+            { title: 'Monsoon Precautions for Animals', content: 'Ensure dry sheds to prevent hoof disease attacks in humid weather.' }
+        ];
+
+        let payments = [
+            { ref: 'TXN-882211', user: 'John Farmer', gateway: 'Easy Paisa', amount: '$15.00', status: 'Verified' }
+        ];
+
+        let feedbacks = [
+            { user: 'John Farmer', msg: 'Prompt response received for cattle emergency treatment. Thank you!' }
+        ];
+
+        let usersList = [
+            { name: 'John Farmer', area: 'North Region', subscription: 'Govt. CVH (Free)' }
+        ];
+
+        // UI Nav Controllers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-card .tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-doctor-login').style.display = 'none';
+            document.getElementById('form-doctor-register').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'doctor-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-doctor-login').style.display = 'block';
+            } else if (tab === 'doctor-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-doctor-register').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            ['complaint', 'status', 'vetcure', 'news', 'doctor', 'report', 'feedback', 'payment', 'profile'].forEach(t => {
+                document.getElementById(`user-tab-${t}`).style.display = 'none';
+                document.getElementById(`u-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`user-tab-${tab}`).style.display = 'block';
+            document.getElementById(`u-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'status') renderUserComplaints();
+            if (tab === 'news') renderNews();
+            if (tab === 'doctor') renderDoctors();
+            if (tab === 'profile') renderUserProfile();
+        }
+
+        function switchDocTab(tab) {
+            ['complaint', 'cure', 'news', 'users', 'payments', 'feedback'].forEach(t => {
+                document.getElementById(`doc-tab-${t}`).style.display = 'none';
+                document.getElementById(`d-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`doc-tab-${tab}`).style.display = 'block';
+            document.getElementById(`d-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'complaint') renderDocComplaints();
+            if (tab === 'users') renderDocUsers();
+            if (tab === 'payments') renderDocPayments();
+            if (tab === 'feedback') renderDocFeedback();
+        }
+
+        // Auth Logic
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-user-email').value || "farmer@vetcure.com";
+                currentUser = { name: "John Farmer", email, area: "North Region", role: 'User' };
+                document.getElementById('user-display-name').textContent = `User: ${currentUser.name}`;
+                switchUserTab('complaint');
+                showView('view-user-dashboard');
+            } else {
+                const email = document.getElementById('login-doctor-email').value || "dr.smith@vetcure.com";
+                currentUser = { name: "Dr. Sarah Smith", email, role: 'Doctor' };
+                document.getElementById('user-display-name').textContent = `Doctor: ${currentUser.name}`;
+                switchDocTab('complaint');
+                showView('view-doctor-dashboard');
+            }
+        }
+
+        function handleRegister(e, role) {
+            e.preventDefault();
+            alert(`${role === 'user' ? 'User' : 'Doctor'} Registration Successful! Please login.`);
+            switchAuthTab(role === 'user' ? 'user-login' : 'doctor-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // User Functions
+        function postComplaint(e) {
+            e.preventDefault();
+            const animal = document.getElementById('cmp-animal').value;
+            const area = document.getElementById('cmp-area').value;
+            const desc = document.getElementById('cmp-desc').value;
+
+            complaints.push({
+                id: 101 + complaints.length,
+                animal, area, desc,
+                solution: 'Pending Doctor Review',
+                status: 'Pending'
+            });
+
+            alert('Complaint submitted successfully!');
+            e.target.reset();
+            switchUserTab('status');
+        }
+
+        function renderUserComplaints() {
+            const tbody = document.getElementById('user-complaints-table');
+            tbody.innerHTML = '';
+            complaints.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>#${c.id}</strong></td>
+                        <td>${c.animal}</td>
+                        <td>${c.desc}</td>
+                        <td>${c.solution}</td>
+                        <td><span class="badge ${c.status === 'Resolved' ? 'badge-success' : 'badge-warning'}">${c.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderNews() {
+            const container = document.getElementById('news-container');
+            container.innerHTML = '';
+            newsList.forEach(n => {
+                container.innerHTML += `
+                    <div class="card" style="margin-bottom:1rem; background:#f8fafc;">
+                        <h3>📢 ${n.title}</h3>
+                        <p style="color:var(--text-light); margin-top:0.4rem;">${n.content}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function renderDoctors() {
+            const tbody = document.getElementById('user-doctors-table');
+            tbody.innerHTML = '';
+            doctors.forEach(d => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${d.name}</strong></td>
+                        <td>${d.clinic}</td>
+                        <td>${d.fee}</td>
+                        <td><small>${d.bank}</small></td>
+                        <td><small>${d.easypaisa}</small></td>
+                        <td>
+                            <button class="btn-submit" style="padding:0.3rem 0.6rem; width:auto;" onclick="subscribeDoctor('${d.name}', '${d.fee}')">
+                                ${d.fee === 'Free' ? 'Freely Subscribe' : 'Pay & Subscribe'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function subscribeDoctor(docName, fee) {
+            if (fee === 'Free') {
+                alert(`Freely Subscribed to Govt CVH (${docName})!`);
+            } else {
+                alert(`Please navigate to 'Make Payment' tab to complete fee transfer for ${docName}.`);
+                switchUserTab('payment');
+            }
+        }
+
+        function postFeedback(e) {
+            e.preventDefault();
+            const msg = document.getElementById('fb-msg').value;
+            feedbacks.push({ user: currentUser.name, msg });
+            alert('Feedback submitted successfully!');
+            e.target.reset();
+        }
+
+        function makePayment(e) {
+            e.preventDefault();
+            const ref = document.getElementById('pay-ref').value;
+            const gateway = document.getElementById('pay-gateway').value;
+
+            payments.push({
+                ref,
+                user: currentUser.name,
+                gateway,
+                amount: '$15.00',
+                status: 'Verified'
+            });
+
+            alert(`Payment submitted successfully using ${gateway}!`);
+            e.target.reset();
+        }
+
+        function renderUserProfile() {
+            const box = document.getElementById('user-profile-box');
+            box.innerHTML = `
+                <p><strong>Full Name:</strong> ${currentUser.name}</p>
+                <p><strong>Email:</strong> ${currentUser.email}</p>
+                <p><strong>Area / Region:</strong> ${currentUser.area}</p>
+                <p><strong>Active Subscriptions:</strong> Govt. CVH (Free Subscription)</p>
+            `;
+        }
+
+        // Doctor Functions
+        function renderDocComplaints() {
+            const tbody = document.getElementById('doc-complaints-table');
+            tbody.innerHTML = '';
+            complaints.forEach((c, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>#${c.id}</strong></td>
+                        <td>${c.animal}</td>
+                        <td>${c.area}</td>
+                        <td>${c.desc}</td>
+                        <td>
+                            ${c.status === 'Resolved' 
+                                ? `<span class="badge badge-success">${c.solution}</span>` 
+                                : `<button class="btn-submit" style="padding:0.3rem 0.6rem; width:auto;" onclick="postSolution(${idx})">Post Solution</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function postSolution(idx) {
+            const sol = prompt("Enter Solution / Prescription for Complaint:");
+            if (sol) {
+                complaints[idx].solution = sol;
+                complaints[idx].status = 'Resolved';
+                alert('Solution posted successfully!');
+                renderDocComplaints();
+            }
+        }
+
+        function postNews(e) {
+            e.preventDefault();
+            const title = document.getElementById('news-title').value;
+            const content = document.getElementById('news-content').value;
+
+            newsList.unshift({ title, content });
+            alert('News advisory published!');
+            e.target.reset();
+        }
+
+        function renderDocUsers() {
+            const tbody = document.getElementById('doc-users-table');
+            tbody.innerHTML = '';
+            usersList.forEach(u => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${u.name}</strong></td>
+                        <td>${u.area}</td>
+                        <td>${u.subscription}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderDocPayments() {
+            const tbody = document.getElementById('doc-payments-table');
+            tbody.innerHTML = '';
+            payments.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${p.ref}</strong></td>
+                        <td>${p.user}</td>
+                        <td>${p.gateway}</td>
+                        <td>${p.amount}</td>
+                        <td><span class="badge badge-success">${p.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderDocFeedback() {
+            const tbody = document.getElementById('doc-feedback-table');
+            tbody.innerHTML = '';
+            feedbacks.forEach(f => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${f.user}</strong></td>
+                        <td>${f.msg}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCure - Tele-Veterinary & Livestock Healthcare Portal (Exp 23)</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-hover: #047857;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #34d399;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .nav-links button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-warning { background-color: var(--accent); }
+        .badge-danger { background-color: var(--danger); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .doc-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .doc-type {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            width: fit-content;
+            margin-bottom: 0.5rem;
+        }
+
+        .type-govt { background: #d1fae5; color: #047857; }
+        .type-pvt { background: #fef3c7; color: #b45309; }
+
+        .news-card {
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            background: #f0fdf4;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">🐄 VetCure Livestock Healthcare System</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('farmer-login')">Farmer Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('farmer-register')">Register Farmer</button>
+                        <button class="tab-btn" onclick="switchAuthTab('doctor-login')">Doctor Login</button>
+                    </div>
+
+                    <!-- Farmer Login -->
+                    <form id="form-farmer-login" onsubmit="handleAuth(event, 'farmer')">
+                        <h2 style="border:none; text-align:center;">Farmer Portal</h2>
+                        <div class="form-group">
+                            <label>Email / Phone</label>
+                            <input type="text" id="login-farmer-id" value="farmer@vetcure.org" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="password" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Login as Farmer</button>
+                    </form>
+
+                    <!-- Farmer Registration -->
+                    <form id="form-farmer-register" style="display: none;" onsubmit="handleRegister(event, 'Farmer')">
+                        <h2 style="border:none; text-align:center;">Register New Farmer</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="Ramesh Patel" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Village / District</label>
+                            <input type="text" placeholder="Anand, Gujarat" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email / Phone</label>
+                            <input type="text" placeholder="ramesh@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Register Account</button>
+                    </form>
+
+                    <!-- Doctor Login -->
+                    <form id="form-doctor-login" style="display: none;" onsubmit="handleAuth(event, 'doctor')">
+                        <h2 style="border:none; text-align:center;">Veterinary Doctor Portal</h2>
+                        <div class="form-group">
+                            <label>Doctor License / Email</label>
+                            <input type="text" id="login-doc-id" value="dr.sharma@vetcure.org" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="doc123" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Doctor Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. FARMER DASHBOARD -->
+        <div id="view-farmer-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="f-nav-complaint" class="active" onclick="switchFarmerTab('complaint')">Post Complaint</button>
+                <button id="f-nav-status" onclick="switchFarmerTab('status')">My Complaints</button>
+                <button id="f-nav-doctors" onclick="switchFarmerTab('doctors')">View Doctors & Subscribe</button>
+                <button id="f-nav-vetcure" onclick="switchFarmerTab('vetcure')">Vetcure Details & Cure Guide</button>
+                <button id="f-nav-news" onclick="switchFarmerTab('news')">Livestock News</button>
+                <button id="f-nav-report" onclick="switchFarmerTab('report')">Disease Reports</button>
+                <button id="f-nav-payment" onclick="switchFarmerTab('payment')">Make Payment</button>
+                <button id="f-nav-feedback" onclick="switchFarmerTab('feedback')">Post Feedback</button>
+                <button id="f-nav-profile" onclick="switchFarmerTab('profile')">My Profile</button>
+            </div>
+
+            <!-- Post Complaint -->
+            <div id="farmer-tab-complaint">
+                <div class="card">
+                    <h2>Post Animal Health Complaint</h2>
+                    <form onsubmit="postComplaint(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Animal Category</label>
+                                <select id="cmp-animal">
+                                    <option value="Cattle / Cow">Cattle / Cow</option>
+                                    <option value="Buffalo">Buffalo</option>
+                                    <option value="Goat / Sheep">Goat / Sheep</option>
+                                    <option value="Poultry">Poultry</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Assign Doctor / Clinic</label>
+                                <select id="cmp-doctor">
+                                    <option value="Govt. CVH Center - Dr. Sharma (Free)">Govt. CVH Center - Dr. Sharma (Free)</option>
+                                    <option value="Private Clinic - Dr. Verma ($15 Fee)">Private Clinic - Dr. Verma ($15 Fee)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Observed Symptoms / Disease Description</label>
+                            <textarea id="cmp-desc" rows="3" placeholder="Describe symptoms like high fever, loss of appetite, skin lesions..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Disease Complaint</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Complaint Status -->
+            <div id="farmer-tab-status" style="display: none;">
+                <div class="card">
+                    <h2>My Complaint Status & Prescriptions</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket Ref</th>
+                                <th>Animal</th>
+                                <th>Doctor</th>
+                                <th>Symptoms</th>
+                                <th>Doctor Solution / Cure</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="farmer-complaints-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- View Doctors & Subscribe -->
+            <div id="farmer-tab-doctors" style="display: none;">
+                <div class="card">
+                    <h2>Veterinary Doctors & CVH Directory</h2>
+                    <div class="grid-2" id="doctors-grid-container">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vetcure Details -->
+            <div id="farmer-tab-vetcure" style="display: none;">
+                <div class="card">
+                    <h2>Vetcure Disease Knowledge Base & Treatments</h2>
+                    <div id="cure-guide-container"></div>
+                </div>
+            </div>
+
+            <!-- Livestock News -->
+            <div id="farmer-tab-news" style="display: none;">
+                <div class="card">
+                    <h2>Veterinary Alerts & Advisory News</h2>
+                    <div id="news-feed-container"></div>
+                </div>
+            </div>
+
+            <!-- Disease Reports -->
+            <div id="farmer-tab-report" style="display: none;">
+                <div class="card">
+                    <h2>Regional Livestock Outbreak Analytics</h2>
+                    <div class="grid-2">
+                        <div class="card" style="background:#ecfdf5; border-color:#a7f3d0;">
+                            <h3>🦠 Top Affected Disease</h3>
+                            <p style="font-size:1.5rem; font-weight:800; color:var(--primary); margin-top:0.5rem;">Foot-and-Mouth (FMD)</p>
+                            <small>Highest incidence in dairy cattle zone</small>
+                        </div>
+                        <div class="card" style="background:#fffbeb; border-color:#fde68a;">
+                            <h3>💉 Vaccination Coverage</h3>
+                            <p style="font-size:1.5rem; font-weight:800; color:var(--accent); margin-top:0.5rem;">88.4% District Level</p>
+                            <small>Next drive: Sept 2026</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Make Payment -->
+            <div id="farmer-tab-payment" style="display: none;">
+                <div class="card">
+                    <h2>Private Doctor Fee Payment Gateway</h2>
+                    <form onsubmit="processPayment(event)">
+                        <div class="form-group">
+                            <label>Select Private Doctor Consultation</label>
+                            <select id="pay-doc-select">
+                                <option value="Dr. Verma - Private Clinic Fee ($15.00)">Dr. Verma - Private Clinic Fee ($15.00)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Gateway Option</label>
+                            <select id="pay-gateway">
+                                <option value="Bank Transfer">Bank Transfer (Direct Account Deposit)</option>
+                                <option value="EasyPaisa / Mobile Wallet">EasyPaisa / Digital Mobile Wallet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Account / Ref Number</label>
+                            <input type="text" placeholder="Enter transaction reference / account details" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Payment Confirmation</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Post Feedback -->
+            <div id="farmer-tab-feedback" style="display: none;">
+                <div class="card">
+                    <h2>Post Feedback for Veterinary Services</h2>
+                    <form onsubmit="postFeedback(event)">
+                        <div class="form-group">
+                            <label>Service / Doctor</label>
+                            <input type="text" id="fb-target" placeholder="Govt CVH Center / Dr. Sharma" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Rating (1 to 5 Stars)</label>
+                            <select id="fb-rating">
+                                <option value="5 ⭐⭐⭐⭐⭐">5 ⭐⭐⭐⭐⭐ Excellent</option>
+                                <option value="4 ⭐⭐⭐⭐">4 ⭐⭐⭐⭐ Good</option>
+                                <option value="3 ⭐⭐⭐">3 ⭐⭐⭐ Average</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Comments</label>
+                            <textarea id="fb-comments" rows="3" placeholder="Provide details on diagnosis and response time..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Profile -->
+            <div id="farmer-tab-profile" style="display: none;">
+                <div class="card">
+                    <h2>Farmer Profile</h2>
+                    <div id="farmer-profile-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DOCTOR DASHBOARD -->
+        <div id="view-doctor-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="d-nav-complaints" class="active" onclick="switchDocTab('complaints')">View Complaints</button>
+                <button id="d-nav-cure" onclick="switchDocTab('cure')">Manage Cure & Guides</button>
+                <button id="d-nav-news" onclick="switchDocTab('news')">Manage News</button>
+                <button id="d-nav-users" onclick="switchDocTab('users')">View User Details</button>
+                <button id="d-nav-payments" onclick="switchDocTab('payments')">Payment Details</button>
+                <button id="d-nav-feedbacks" onclick="switchDocTab('feedbacks')">Feedback Details</button>
+            </div>
+
+            <!-- View Complaints & Solution -->
+            <div id="doc-tab-complaints">
+                <div class="card">
+                    <h2>Incoming Farmer Complaints & Prescriptions</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref</th>
+                                <th>Farmer Name</th>
+                                <th>Animal</th>
+                                <th>Symptoms</th>
+                                <th>Current Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-complaints-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Manage Cure -->
+            <div id="doc-tab-cure" style="display: none;">
+                <div class="card">
+                    <h2>Add Disease Diagnosis & Prescription Cure</h2>
+                    <form onsubmit="addCureGuide(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Disease Name</label>
+                                <input type="text" id="cure-disease" placeholder="Lumpy Skin Disease" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Affected Animals</label>
+                                <input type="text" id="cure-animal" placeholder="Cattle, Buffalo" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Prescribed Treatment / Cure Details</label>
+                            <textarea id="cure-treatment" rows="3" placeholder="Antibiotics course, isolation, local antiseptic application..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Disease Cure Entry</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Manage News -->
+            <div id="doc-tab-news" style="display: none;">
+                <div class="card">
+                    <h2>Post Veterinary Advisory News</h2>
+                    <form onsubmit="addNewsAlert(event)">
+                        <div class="form-group">
+                            <label>Advisory Headline</label>
+                            <input type="text" id="news-headline" placeholder="Seasonal Vaccination Drive Notice" required>
+                        </div>
+                        <div class="form-group">
+                            <label>News Content / Guidance</label>
+                            <textarea id="news-body" rows="3" placeholder="Free dewoming and FMD vaccination starting next Monday..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Publish Advisory</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- View User Details -->
+            <div id="doc-tab-users" style="display: none;">
+                <div class="card">
+                    <h2>Subscribed Farmers Directory</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Farmer Name</th>
+                                <th>Location</th>
+                                <th>Contact</th>
+                                <th>Subscription Plan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-users-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- View Payment Details -->
+            <div id="doc-tab-payments" style="display: none;">
+                <div class="card">
+                    <h2>Doctor Bank & Mobile Wallet Payments Received</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref ID</th>
+                                <th>Farmer</th>
+                                <th>Gateway</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-payments-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Feedback Details -->
+            <div id="doc-tab-feedbacks" style="display: none;">
+                <div class="card">
+                    <h2>Farmer Service Feedback</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Target Service</th>
+                                <th>Rating</th>
+                                <th>Comments</th>
+                                <th>Farmer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-feedbacks-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let currentUser = null;
+
+        let doctorsList = [
+            { id: 1, name: 'Dr. Sharma', type: 'Govt. CVH Doctor', fee: 'Free (Govt. Subsidized)', bank: 'SBI-Govt-9921', easypaisa: '0300-1122334', subs: 'Subscribed' },
+            { id: 2, name: 'Dr. Verma', type: 'Private Clinic Specialist', fee: '$15.00 / consultation', bank: 'HDFC-PVT-4431', easypaisa: '0300-5566778', subs: 'Not Subscribed' }
+        ];
+
+        let complaints = [
+            { ref: 'CMP-101', farmer: 'Ramesh Patel', animal: 'Cattle / Cow', doctor: 'Dr. Sharma', desc: 'High fever, reduced milk yield, and mouth lesions.', solution: 'Prescribed anti-inflammatory & antiseptic mouth wash.', status: 'Resolved' }
+        ];
+
+        let curesList = [
+            { disease: 'Foot-and-Mouth Disease (FMD)', animal: 'Cattle, Buffalo', treatment: 'Isolate animal, wash mouth with potassium permanganate solution, administer prescribed fever medication.' },
+            { disease: 'Mastitis', animal: 'Dairy Cows', treatment: 'Intramammary antibiotic infusion and keep milking area sanitized.' }
+        ];
+
+        let newsList = [
+            { title: 'Free Foot-and-Mouth Vaccination Campaign', body: 'Government CVHs are conducting free vaccination drives across all districts starting this week.' }
+        ];
+
+        let paymentsList = [
+            { id: 'PAY-8821', farmer: 'Ramesh Patel', gateway: 'EasyPaisa', amount: '$15.00', status: 'Verified' }
+        ];
+
+        let feedbacksList = [
+            { target: 'Govt CVH - Dr. Sharma', rating: '5 ⭐⭐⭐⭐⭐', comments: 'Quick response and helpful treatment guidance.', farmer: 'Ramesh Patel' }
+        ];
+
+        let farmersList = [
+            { name: 'Ramesh Patel', location: 'Anand, Gujarat', contact: 'ramesh@vetcure.org', plan: 'Govt. Free Sub' }
+        ];
+
+        // Navigation
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-card .tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-farmer-login').style.display = 'none';
+            document.getElementById('form-farmer-register').style.display = 'none';
+            document.getElementById('form-doctor-login').style.display = 'none';
+
+            if (tab === 'farmer-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-farmer-login').style.display = 'block';
+            } else if (tab === 'farmer-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-farmer-register').style.display = 'block';
+            } else if (tab === 'doctor-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-doctor-login').style.display = 'block';
+            }
+        }
+
+        function switchFarmerTab(tab) {
+            ['complaint', 'status', 'doctors', 'vetcure', 'news', 'report', 'payment', 'feedback', 'profile'].forEach(t => {
+                document.getElementById(`farmer-tab-${t}`).style.display = 'none';
+                document.getElementById(`f-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`farmer-tab-${tab}`).style.display = 'block';
+            document.getElementById(`f-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'status') renderFarmerComplaints();
+            if (tab === 'doctors') renderDoctorsGrid();
+            if (tab === 'vetcure') renderCures();
+            if (tab === 'news') renderNewsFeed();
+            if (tab === 'profile') renderFarmerProfile();
+        }
+
+        function switchDocTab(tab) {
+            ['complaints', 'cure', 'news', 'users', 'payments', 'feedbacks'].forEach(t => {
+                document.getElementById(`doc-tab-${t}`).style.display = 'none';
+                document.getElementById(`d-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`doc-tab-${tab}`).style.display = 'block';
+            document.getElementById(`d-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'complaints') renderDocComplaints();
+            if (tab === 'users') renderDocUsers();
+            if (tab === 'payments') renderDocPayments();
+            if (tab === 'feedbacks') renderDocFeedbacks();
+        }
+
+        // Auth
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'farmer') {
+                const id = document.getElementById('login-farmer-id').value || "farmer@vetcure.org";
+                currentUser = { name: "Ramesh Patel", id, location: "Anand, Gujarat", role: 'Farmer' };
+                document.getElementById('user-display-name').textContent = `Farmer: ${currentUser.name}`;
+                switchFarmerTab('complaint');
+                showView('view-farmer-dashboard');
+            } else {
+                currentUser = { name: "Dr. Sharma", role: 'Doctor' };
+                document.getElementById('user-display-name').textContent = `Dr. Sharma (Veterinary Doctor)`;
+                switchDocTab('complaints');
+                showView('view-doctor-dashboard');
+            }
+        }
+
+        function handleRegister(e, type) {
+            e.preventDefault();
+            alert(`${type} registered successfully! Please login.`);
+            switchAuthTab('farmer-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Farmer Actions
+        function postComplaint(e) {
+            e.preventDefault();
+            const animal = document.getElementById('cmp-animal').value;
+            const doctor = document.getElementById('cmp-doctor').value;
+            const desc = document.getElementById('cmp-desc').value;
+
+            const ref = 'CMP-' + Math.floor(100 + Math.random() * 900);
+            complaints.unshift({
+                ref,
+                farmer: currentUser.name,
+                animal,
+                doctor,
+                desc,
+                solution: 'Pending Doctor Diagnosis',
+                status: 'Open'
+            });
+
+            alert(`Complaint submitted successfully! Ticket Reference: ${ref}`);
+            e.target.reset();
+            switchFarmerTab('status');
+        }
+
+        function renderFarmerComplaints() {
+            const tbody = document.getElementById('farmer-complaints-table');
+            tbody.innerHTML = '';
+            complaints.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${c.ref}</strong></td>
+                        <td>${c.animal}</td>
+                        <td>${c.doctor}</td>
+                        <td>${c.desc}</td>
+                        <td><em>${c.solution}</em></td>
+                        <td><span class="badge ${c.status === 'Resolved' ? 'badge-success' : 'badge-warning'}">${c.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderDoctorsGrid() {
+            const container = document.getElementById('doctors-grid-container');
+            container.innerHTML = '';
+
+            doctorsList.forEach(d => {
+                container.innerHTML += `
+                    <div class="doc-card">
+                        <div>
+                            <span class="doc-type ${d.fee.includes('Free') ? 'type-govt' : 'type-pvt'}">${d.type}</span>
+                            <h3 style="border:none; margin-bottom:0.3rem;">${d.name}</h3>
+                            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:0.5rem;">Fee: <strong>${d.fee}</strong></p>
+                            <p style="font-size:0.8rem; margin-bottom:0.2rem;"><strong>Bank Details:</strong> ${d.bank}</p>
+                            <p style="font-size:0.8rem; margin-bottom:1rem;"><strong>EasyPaisa:</strong> ${d.easypaisa}</p>
+                        </div>
+                        <button class="btn-submit" onclick="toggleSubscribe(${d.id})">
+                            ${d.subs === 'Subscribed' ? 'Subscribed' : 'Subscribe Doctor'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleSubscribe(docId) {
+            const doc = doctorsList.find(d => d.id === docId);
+            if (doc) {
+                if (doc.fee.includes('Private') && doc.subs !== 'Subscribed') {
+                    alert(`Private clinic doctor requires fee payment ($15). Redirecting to payment...`);
+                    switchFarmerTab('payment');
+                    return;
+                }
+                doc.subs = doc.subs === 'Subscribed' ? 'Not Subscribed' : 'Subscribed';
+                alert(`Subscription status updated for ${doc.name}`);
+                renderDoctorsGrid();
+            }
+        }
+
+        function renderCures() {
+            const container = document.getElementById('cure-guide-container');
+            container.innerHTML = '';
+            curesList.forEach(c => {
+                container.innerHTML += `
+                    <div class="card" style="border-left: 4px solid var(--primary);">
+                        <h3>🧬 Disease: ${c.disease}</h3>
+                        <p style="font-size:0.85rem; margin-bottom:0.4rem;"><strong>Affected Animals:</strong> ${c.animal}</p>
+                        <p style="font-size:0.85rem; color:var(--text-light);"><strong>Prescribed Cure / Treatment:</strong> ${c.treatment}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function renderNewsFeed() {
+            const container = document.getElementById('news-feed-container');
+            container.innerHTML = '';
+            newsList.forEach(n => {
+                container.innerHTML += `
+                    <div class="news-card">
+                        <h3 style="border:none; margin-bottom:0.3rem;">📢 ${n.title}</h3>
+                        <p style="font-size:0.85rem; color:var(--text-light);">${n.body}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function processPayment(e) {
+            e.preventDefault();
+            const gw = document.getElementById('pay-gateway').value;
+            const ref = 'PAY-' + Math.floor(1000 + Math.random() * 9000);
+
+            paymentsList.unshift({
+                id: ref,
+                farmer: currentUser.name,
+                gateway: gw,
+                amount: '$15.00',
+                status: 'Verified'
+            });
+
+            // Auto subscribe private doctor
+            const pvtDoc = doctorsList.find(d => d.id === 2);
+            if (pvtDoc) pvtDoc.subs = 'Subscribed';
+
+            alert(`Payment of $15.00 confirmed via ${gw}! Private doctor subscribed. Ref: ${ref}`);
+            switchFarmerTab('doctors');
+        }
+
+        function postFeedback(e) {
+            e.preventDefault();
+            const target = document.getElementById('fb-target').value;
+            const rating = document.getElementById('fb-rating').value;
+            const comments = document.getElementById('fb-comments').value;
+
+            feedbacksList.unshift({
+                target, rating, comments, farmer: currentUser.name
+            });
+
+            alert('Thank you! Feedback posted successfully.');
+            e.target.reset();
+        }
+
+        function renderFarmerProfile() {
+            const box = document.getElementById('farmer-profile-box');
+            box.innerHTML = `
+                <p><strong>Farmer Name:</strong> ${currentUser.name}</p>
+                <p><strong>Contact / Email:</strong> ${currentUser.id}</p>
+                <p><strong>District Location:</strong> ${currentUser.location}</p>
+                <p><strong>Active Subscriptions:</strong> Govt. CVH (Free)</p>
+            `;
+        }
+
+        // Doctor Actions
+        function renderDocComplaints() {
+            const tbody = document.getElementById('doc-complaints-table');
+            tbody.innerHTML = '';
+            complaints.forEach((c, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${c.ref}</strong></td>
+                        <td>${c.farmer}</td>
+                        <td>${c.animal}</td>
+                        <td>${c.desc}</td>
+                        <td><span class="badge ${c.status === 'Resolved' ? 'badge-success' : 'badge-warning'}">${c.status}</span></td>
+                        <td>
+                            <button class="btn-submit" style="padding:0.3rem 0.6rem; width:auto;" onclick="postSolution(${idx})">Post Prescription</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function postSolution(idx) {
+            const sol = prompt("Enter Doctor Prescription & Treatment Solution:", "Prescribe Antibiotics and isolate animal for 5 days.");
+            if (sol) {
+                complaints[idx].solution = sol;
+                complaints[idx].status = 'Resolved';
+                alert('Prescription solution saved successfully!');
+                renderDocComplaints();
+            }
+        }
+
+        function addCureGuide(e) {
+            e.preventDefault();
+            const disease = document.getElementById('cure-disease').value;
+            const animal = document.getElementById('cure-animal').value;
+            const treatment = document.getElementById('cure-treatment').value;
+
+            curesList.unshift({ disease, animal, treatment });
+            alert(`Cure entry for "${disease}" added!`);
+            e.target.reset();
+        }
+
+        function addNewsAlert(e) {
+            e.preventDefault();
+            const title = document.getElementById('news-headline').value;
+            const body = document.getElementById('news-body').value;
+
+            newsList.unshift({ title, body });
+            alert(`Advisory news published!`);
+            e.target.reset();
+        }
+
+        function renderDocUsers() {
+            const tbody = document.getElementById('doc-users-table');
+            tbody.innerHTML = '';
+            farmersList.forEach(f => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${f.name}</strong></td>
+                        <td>${f.location}</td>
+                        <td>${f.contact}</td>
+                        <td><span class="badge badge-success">${f.plan}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderDocPayments() {
+            const tbody = document.getElementById('doc-payments-table');
+            tbody.innerHTML = '';
+            paymentsList.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${p.id}</strong></td>
+                        <td>${p.farmer}</td>
+                        <td>${p.gateway}</td>
+                        <td>${p.amount}</td>
+                        <td><span class="badge badge-success">${p.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderDocFeedbacks() {
+            const tbody = document.getElementById('doc-feedbacks-table');
+            tbody.innerHTML = '';
+            feedbacksList.forEach(f => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${f.target}</strong></td>
+                        <td>${f.rating}</td>
+                        <td>${f.comments}</td>
+                        <td>${f.farmer}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

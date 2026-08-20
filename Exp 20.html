@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPark - Automated Parking Slot Reservation & Management Portal (Exp 20)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .nav-links button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-warning { background-color: var(--accent); }
+        .badge-danger { background-color: var(--danger); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Parking Slot Visual Grid */
+        .parking-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .slot-box {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #ffffff;
+        }
+
+        .slot-box.available {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .slot-box.occupied {
+            border-color: var(--danger);
+            background: #fef2f2;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .slot-box.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .slot-num {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .slot-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">🅿️ SmartPark Express Reservation Portal</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Driver Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register Driver</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Admin Portal</button>
+                    </div>
+
+                    <!-- Driver Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Driver Sign In</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-user-email" value="driver@smartpark.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="password" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Login & Reserve Slot</button>
+                    </form>
+
+                    <!-- Driver Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Register Driver Account</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="Alex Johnson" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Vehicle Number Plate</label>
+                            <input type="text" placeholder="KA-03-MG-7788" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="alex@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Create Account</button>
+                    </form>
+
+                    <!-- Admin Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Plaza Operator Admin Login</h2>
+                        <div class="form-group">
+                            <label>Admin Username / Email</label>
+                            <input type="text" id="login-admin-id" value="admin@smartpark.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="admin123" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Login to Parking Control</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DRIVER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="u-nav-book" class="active" onclick="switchUserTab('book')">Reserve Parking Slot</button>
+                <button id="u-nav-tickets" onclick="switchUserTab('tickets')">My Booking Passes</button>
+                <button id="u-nav-wallet" onclick="switchUserTab('wallet')">Smart Wallet</button>
+                <button id="u-nav-profile" onclick="switchUserTab('profile')">Profile</button>
+            </div>
+
+            <!-- TAB: BOOK PARKING SLOT -->
+            <div id="user-tab-book">
+                <div class="card">
+                    <h2>Select Location & Vehicle Type</h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Select Parking Plaza Location</label>
+                            <select id="book-plaza" onchange="renderSlotGrid()">
+                                <option value="Central Metro Station Parking">Central Metro Station Parking</option>
+                                <option value="Downtown Mall Complex Plaza">Downtown Mall Complex Plaza</option>
+                                <option value="Airport Terminal 2 Express Lot">Airport Terminal 2 Express Lot</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vehicle Type</label>
+                            <select id="book-vtype" onchange="calculatePrice()">
+                                <option value="Four Wheeler (Car/SUV)">Four Wheeler (Car/SUV) - $4.00/hr</option>
+                                <option value="Two Wheeler (Bike)">Two Wheeler (Bike) - $1.50/hr</option>
+                                <option value="EV Charging Slot">EV Charging Slot - $6.00/hr</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Booking Duration (Hours)</label>
+                            <input type="number" id="book-hours" min="1" max="24" value="2" onchange="calculatePrice()" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Fare Amount</label>
+                            <input type="text" id="book-total-fare" value="$8.00" readonly style="font-weight:bold; color:var(--primary);">
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top:1.5rem;">Select Available Parking Slot</h3>
+                    <div class="parking-grid" id="slots-container">
+                        <!-- Rendered dynamically -->
+                    </div>
+
+                    <button class="btn-submit" style="margin-top:1.5rem;" onclick="confirmBooking()">Confirm Reservation & Pay</button>
+                </div>
+            </div>
+
+            <!-- TAB: MY BOOKING TICKETS -->
+            <div id="user-tab-tickets" style="display: none;">
+                <div class="card">
+                    <h2>My Active & Past Parking Passes</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pass Ref</th>
+                                <th>Plaza Location</th>
+                                <th>Slot No</th>
+                                <th>Duration</th>
+                                <th>Amount Paid</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-bookings-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: SMART WALLET -->
+            <div id="user-tab-wallet" style="display: none;">
+                <div class="card">
+                    <h2>SmartPark eWallet Top-Up</h2>
+                    <p style="margin-bottom:1rem; color:var(--text-light);">Current Balance: <strong id="user-wallet-bal" style="color:var(--primary); font-size:1.2rem;">$85.00</strong></p>
+                    <form onsubmit="topupWallet(event)">
+                        <div class="form-group">
+                            <label>Enter Top Up Amount ($)</label>
+                            <input type="number" id="topup-amt" min="5" value="25" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select>
+                                <option value="Card">Credit / Debit Card</option>
+                                <option value="UPI/Wallet">Digital Wallet Instant Transfer</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Funds to Wallet</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: PROFILE -->
+            <div id="user-tab-profile" style="display: none;">
+                <div class="card">
+                    <h2>Driver Profile Information</h2>
+                    <div id="driver-profile-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="a-nav-plazas" class="active" onclick="switchAdminTab('plazas')">Manage Parking Plazas</button>
+                <button id="a-nav-reservations" onclick="switchAdminTab('reservations')">Live Reservations</button>
+                <button id="a-nav-reports" onclick="switchAdminTab('reports')">Revenue Reports</button>
+            </div>
+
+            <!-- Manage Plazas -->
+            <div id="admin-tab-plazas">
+                <div class="card">
+                    <h2>Add New Parking Plaza</h2>
+                    <form onsubmit="addPlaza(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Plaza Name</label>
+                                <input type="text" id="adm-pname" placeholder="TechPark Garage A" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Total Slots Count</label>
+                                <input type="number" id="adm-pslots" value="12" min="4" max="50" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Plaza to Network</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Active Parking Plazas Directory</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Plaza Name</th>
+                                <th>Total Slots</th>
+                                <th>Hourly Rate</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-plazas-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Live Reservations -->
+            <div id="admin-tab-reservations" style="display: none;">
+                <div class="card">
+                    <h2>Active Live Slot Bookings</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref ID</th>
+                                <th>Driver Name</th>
+                                <th>Vehicle Plate</th>
+                                <th>Plaza & Slot</th>
+                                <th>Fare</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-reservations-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Revenue Reports -->
+            <div id="admin-tab-reports" style="display: none;">
+                <div class="card">
+                    <h2>Occupancy & Earnings Analytics</h2>
+                    <div class="grid-2">
+                        <div class="card" style="background:#eff6ff; border-color:#bfdbfe;">
+                            <h3>💰 Total Revenue Collected</h3>
+                            <p style="font-size:1.8rem; font-weight:800; color:var(--primary); margin-top:0.5rem;">$1,240.00</p>
+                        </div>
+                        <div class="card" style="background:#f0fdf4; border-color:#bbf7d0;">
+                            <h3>🅿️ Average Occupancy Rate</h3>
+                            <p style="font-size:1.8rem; font-weight:800; color:var(--success); margin-top:0.5rem;">78.5%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let currentUser = null;
+        let walletBalance = 85.00;
+        let selectedSlot = null;
+
+        let parkingSlotsData = [
+            { id: 'A1', occupied: false },
+            { id: 'A2', occupied: true },
+            { id: 'A3', occupied: false },
+            { id: 'A4', occupied: false },
+            { id: 'A5', occupied: true },
+            { id: 'A6', occupied: false },
+            { id: 'A7', occupied: false },
+            { id: 'A8', occupied: false }
+        ];
+
+        let bookings = [
+            { ref: 'PK-99102', plaza: 'Central Metro Station Parking', slot: 'A2', duration: '2 Hours', fare: '$8.00', driver: 'Alex Johnson', vehicle: 'KA-03-MG-7788', status: 'Active' }
+        ];
+
+        let plazasList = [
+            { name: 'Central Metro Station Parking', slots: 8, rate: '$4.00/hr', status: 'Operational' },
+            { name: 'Downtown Mall Complex Plaza', slots: 12, rate: '$4.00/hr', status: 'Operational' },
+            { name: 'Airport Terminal 2 Express Lot', slots: 20, rate: '$6.00/hr', status: 'Operational' }
+        ];
+
+        // UI Handlers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-card .tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            ['book', 'tickets', 'wallet', 'profile'].forEach(t => {
+                document.getElementById(`user-tab-${t}`).style.display = 'none';
+                document.getElementById(`u-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`user-tab-${tab}`).style.display = 'block';
+            document.getElementById(`u-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'book') renderSlotGrid();
+            if (tab === 'tickets') renderUserBookings();
+            if (tab === 'profile') renderDriverProfile();
+        }
+
+        function switchAdminTab(tab) {
+            ['plazas', 'reservations', 'reports'].forEach(t => {
+                document.getElementById(`admin-tab-${t}`).style.display = 'none';
+                document.getElementById(`a-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`admin-tab-${tab}`).style.display = 'block';
+            document.getElementById(`a-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'plazas') renderAdminPlazas();
+            if (tab === 'reservations') renderAdminReservations();
+        }
+
+        // Auth
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-user-email').value || "driver@smartpark.com";
+                currentUser = { name: "Alex Johnson", email, vehicle: "KA-03-MG-7788", role: 'Driver' };
+                document.getElementById('user-display-name').textContent = `Driver: ${currentUser.name}`;
+                switchUserTab('book');
+                showView('view-user-dashboard');
+            } else {
+                currentUser = { name: "Plaza Admin", role: 'Admin' };
+                document.getElementById('user-display-name').textContent = `Admin Portal`;
+                switchAdminTab('plazas');
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Driver registration successful! Please login.');
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Driver Actions
+        function calculatePrice() {
+            const vtype = document.getElementById('book-vtype').value;
+            const hrs = parseInt(document.getElementById('book-hours').value) || 1;
+            let rate = 4.0;
+            if (vtype.includes('Two Wheeler')) rate = 1.5;
+            if (vtype.includes('EV')) rate = 6.0;
+
+            const total = rate * hrs;
+            document.getElementById('book-total-fare').value = `$${total.toFixed(2)}`;
+        }
+
+        function renderSlotGrid() {
+            const container = document.getElementById('slots-container');
+            container.innerHTML = '';
+
+            parkingSlotsData.forEach(s => {
+                const box = document.createElement('div');
+                box.className = `slot-box ${s.occupied ? 'occupied' : 'available'} ${selectedSlot === s.id ? 'selected' : ''}`;
+                box.innerHTML = `
+                    <div class="slot-num">${s.id}</div>
+                    <div class="slot-status">${s.occupied ? 'Occupied' : 'Free'}</div>
+                `;
+                if (!s.occupied) {
+                    box.onclick = () => {
+                        selectedSlot = s.id;
+                        renderSlotGrid();
+                    };
+                }
+                container.appendChild(box);
+            });
+            calculatePrice();
+        }
+
+        function confirmBooking() {
+            if (!selectedSlot) {
+                alert('Please click on an available (green) parking slot grid box first!');
+                return;
+            }
+
+            const plaza = document.getElementById('book-plaza').value;
+            const fareStr = document.getElementById('book-total-fare').value;
+            const fareNum = parseFloat(fareStr.replace('$', ''));
+            const hrs = document.getElementById('book-hours').value;
+
+            if (walletBalance < fareNum) {
+                alert('Insufficient Wallet Balance! Top up funds in Smart Wallet.');
+                switchUserTab('wallet');
+                return;
+            }
+
+            walletBalance -= fareNum;
+            document.getElementById('user-wallet-bal').textContent = `$${walletBalance.toFixed(2)}`;
+
+            const slotObj = parkingSlotsData.find(s => s.id === selectedSlot);
+            if (slotObj) slotObj.occupied = true;
+
+            const ref = 'PK-' + Math.floor(10000 + Math.random() * 90000);
+            bookings.unshift({
+                ref,
+                plaza,
+                slot: selectedSlot,
+                duration: `${hrs} Hours`,
+                fare: fareStr,
+                driver: currentUser.name,
+                vehicle: currentUser.vehicle,
+                status: 'Active'
+            });
+
+            alert(`Reservation Confirmed! Slot: ${selectedSlot} at ${plaza}. Pass Ref: ${ref}`);
+            selectedSlot = null;
+            switchUserTab('tickets');
+        }
+
+        function renderUserBookings() {
+            const tbody = document.getElementById('user-bookings-table');
+            tbody.innerHTML = '';
+            bookings.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${b.ref}</strong></td>
+                        <td>${b.plaza}</td>
+                        <td><span class="badge badge-success">${b.slot}</span></td>
+                        <td>${b.duration}</td>
+                        <td>${b.fare}</td>
+                        <td><span class="badge badge-success">${b.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function topupWallet(e) {
+            e.preventDefault();
+            const amt = parseFloat(document.getElementById('topup-amt').value);
+            walletBalance += amt;
+            document.getElementById('user-wallet-bal').textContent = `$${walletBalance.toFixed(2)}`;
+            alert(`$${amt.toFixed(2)} added to Smart Wallet successfully!`);
+            switchUserTab('book');
+        }
+
+        function renderDriverProfile() {
+            const box = document.getElementById('driver-profile-box');
+            box.innerHTML = `
+                <p><strong>Driver Name:</strong> ${currentUser.name}</p>
+                <p><strong>Email:</strong> ${currentUser.email}</p>
+                <p><strong>Registered Vehicle:</strong> ${currentUser.vehicle}</p>
+                <p><strong>Wallet Balance:</strong> $${walletBalance.toFixed(2)}</p>
+            `;
+        }
+
+        // Admin Actions
+        function addPlaza(e) {
+            e.preventDefault();
+            const name = document.getElementById('adm-pname').value;
+            const slots = parseInt(document.getElementById('adm-pslots').value);
+
+            plazasList.push({
+                name, slots, rate: '$4.00/hr', status: 'Operational'
+            });
+
+            alert(`Plaza "${name}" created successfully!`);
+            e.target.reset();
+            renderAdminPlazas();
+        }
+
+        function renderAdminPlazas() {
+            const tbody = document.getElementById('admin-plazas-table');
+            tbody.innerHTML = '';
+            plazasList.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.slots} Slots</td>
+                        <td>${p.rate}</td>
+                        <td><span class="badge badge-success">${p.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminReservations() {
+            const tbody = document.getElementById('admin-reservations-table');
+            tbody.innerHTML = '';
+            bookings.forEach((b, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${b.ref}</strong></td>
+                        <td>${b.driver}</td>
+                        <td>${b.vehicle}</td>
+                        <td>${b.plaza} (${b.slot})</td>
+                        <td>${b.fare}</td>
+                        <td>
+                            <button class="btn-submit" style="padding:0.3rem 0.6rem; width:auto; background:var(--danger);" onclick="checkoutBooking(${idx})">Release Slot</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function checkoutBooking(idx) {
+            const b = bookings[idx];
+            const slotObj = parkingSlotsData.find(s => s.id === b.slot);
+            if (slotObj) slotObj.occupied = false;
+            b.status = 'Completed';
+            alert(`Released Slot ${b.slot} for Ref ${b.ref}.`);
+            renderAdminReservations();
+        }
+    </script>
+</body>
+</html>

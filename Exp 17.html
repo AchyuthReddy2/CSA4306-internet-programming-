@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPulse - Online Fitness & Gym Membership Portal (Exp 17)</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --secondary: #111827;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-light: #94a3b8;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover { opacity: 0.9; }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Auth Styles */
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 460px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: #0f172a;
+            color: white;
+        }
+
+        input:focus, select:focus {
+            outline: 1px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-links button.active { color: var(--primary); }
+
+        /* Membership Plans Grid */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .plan-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .plan-card:hover { transform: translateY(-5px); }
+
+        .plan-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .plan-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .plan-price {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0.8rem 0;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 1rem 0 1.5rem 0;
+            text-align: left;
+            flex: 1;
+        }
+
+        .plan-features li {
+            padding: 0.4rem 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th { background-color: #0f172a; }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--primary); }
+        .badge-warning { background-color: var(--accent); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">🏋️‍♂️ FitPulse Gym & Fitness</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome, Member</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Member Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register</button>
+                        <button class="tab-btn" onclick="switchAuthTab('admin-login')">Trainer Portal</button>
+                    </div>
+
+                    <!-- Member Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Member Sign In</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-email" placeholder="member@fitpulse.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Login & Access Workouts</button>
+                    </form>
+
+                    <!-- Member Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Join FitPulse Today</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" required placeholder="David Miller">
+                        </div>
+                        <div class="form-group">
+                            <label>Fitness Goal</label>
+                            <select id="reg-goal">
+                                <option value="Weight Loss">Weight Loss</option>
+                                <option value="Muscle Building">Muscle Building & Strength</option>
+                                <option value="Endurance">Cardio & Endurance</option>
+                                <option value="General Health">General Wellness & Yoga</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" required placeholder="david@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit">Create Member Account</button>
+                    </form>
+
+                    <!-- Admin / Trainer Login -->
+                    <form id="form-admin-login" style="display: none;" onsubmit="handleAuth(event, 'admin')">
+                        <h2 style="border:none; text-align:center;">Trainer & Admin Login</h2>
+                        <div class="form-group">
+                            <label>Staff Username</label>
+                            <input type="text" id="login-admin-name" placeholder="trainer" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Passcode</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Login to Gym Management</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MEMBER DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="nav-plans-btn" class="active" onclick="switchUserTab('plans')">Membership Plans</button> |
+                <button id="nav-classes-btn" onclick="switchUserTab('classes')">Book Workout Classes</button> |
+                <button id="nav-my-membership-btn" onclick="switchUserTab('my-membership')">My Active Membership</button>
+            </div>
+
+            <!-- TAB: MEMBERSHIP PLANS -->
+            <div id="user-tab-plans">
+                <div class="plans-grid" id="membership-plans-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB: CLASS SCHEDULE & BOOKING -->
+            <div id="user-tab-classes" style="display: none;">
+                <div class="card">
+                    <h2>Book Live Gym Classes & Sessions</h2>
+                    <div class="grid-2">
+                        <input type="text" id="class-search" placeholder="Search Yoga, CrossFit, HIIT..." onkeyup="filterClasses()">
+                        <select id="class-filter-day" onchange="filterClasses()">
+                            <option value="All">All Days</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                    </div>
+                    <table style="margin-top: 1rem;">
+                        <thead>
+                            <tr>
+                                <th>Class Name</th>
+                                <th>Trainer</th>
+                                <th>Schedule</th>
+                                <th>Slots Available</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-classes-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: MY ACTIVE MEMBERSHIP -->
+            <div id="user-tab-my-membership" style="display: none;">
+                <div class="card">
+                    <h2>Member Pass & Workout Log</h2>
+                    <div id="active-membership-details">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN / TRAINER DASHBOARD -->
+        <div id="view-admin-dashboard" class="page-view">
+            <div class="nav-links">
+                <button onclick="switchAdminTab('classes-mgmt')">Manage Fitness Classes</button> |
+                <button onclick="switchAdminTab('members')">Gym Memberships & Bookings</button>
+            </div>
+
+            <!-- TAB: MANAGE CLASSES -->
+            <div id="admin-tab-classes">
+                <div class="card">
+                    <h2>Schedule New Workout Class</h2>
+                    <form onsubmit="addClass(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Class Title</label>
+                                <input type="text" id="adm-class-title" placeholder="Power Yoga Flow" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Assigned Trainer</label>
+                                <input type="text" id="adm-trainer" placeholder="Coach Sarah" required>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Schedule (Day & Time)</label>
+                                <input type="text" id="adm-schedule" placeholder="Monday 08:00 AM" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Capacity (Slots)</label>
+                                <input type="number" id="adm-slots" value="15" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Add Class to Schedule</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Active Fitness Schedule</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Trainer</th>
+                                <th>Schedule</th>
+                                <th>Slots Left</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-classes-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: MEMBERS & BOOKINGS -->
+            <div id="admin-tab-members" style="display: none;">
+                <div class="card">
+                    <h2>All Active Member Bookings</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking Ref</th>
+                                <th>Member Name</th>
+                                <th>Item / Class</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-members-table">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Platform State
+        let currentUser = null;
+        let activeMembership = { planName: 'Gold Pro Annual', status: 'Active', renewal: '2027-01-15' };
+
+        let plans = [
+            { id: 1, name: 'Basic Pass', price: 29.99, isFeatured: false, features: ['Access to Gym Floor', 'Locker Room Access', 'Free Water Station', '1 Complimentary Fitness Consultation'] },
+            { id: 2, name: 'Gold Pro', price: 59.99, isFeatured: true, features: ['All Basic Pass Benefits', 'Unlimited Group Classes', 'Sauna & Spa Access', 'Free Personal Workout Plan'] },
+            { id: 3, name: 'VIP Elite', price: 99.99, isFeatured: false, features: ['All Gold Pro Benefits', '2 Monthly Personal Trainer Sessions', 'Nutritionist Coaching', '24/7 Priority Gym Access'] }
+        ];
+
+        let fitnessClasses = [
+            { id: 101, title: 'HIIT Cardio Burn', trainer: 'Coach Mark', schedule: 'Monday 07:00 AM', slots: 8 },
+            { id: 102, title: 'Power Bodybuilding', trainer: 'Alex Vance', schedule: 'Wednesday 05:00 PM', slots: 12 },
+            { id: 103, title: 'Vinyasa Yoga & Core', trainer: 'Elena Rostova', schedule: 'Friday 08:30 AM', slots: 5 }
+        ];
+
+        let memberBookings = [
+            { ref: 'BK-9921', memberName: 'David Miller', item: 'Gold Pro Membership', type: 'Subscription', status: 'Paid ($59.99)' },
+            { ref: 'BK-4402', memberName: 'David Miller', item: 'HIIT Cardio Burn', type: 'Class Booking', status: 'Confirmed' }
+        ];
+
+        // Navigation Controllers
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-admin-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'admin-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-admin-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            document.getElementById('user-tab-plans').style.display = 'none';
+            document.getElementById('user-tab-classes').style.display = 'none';
+            document.getElementById('user-tab-my-membership').style.display = 'none';
+
+            document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+
+            if (tab === 'plans') {
+                document.getElementById('user-tab-plans').style.display = 'block';
+                document.getElementById('nav-plans-btn').classList.add('active');
+            } else if (tab === 'classes') {
+                document.getElementById('user-tab-classes').style.display = 'block';
+                document.getElementById('nav-classes-btn').classList.add('active');
+                renderUserClasses();
+            } else if (tab === 'my-membership') {
+                document.getElementById('user-tab-my-membership').style.display = 'block';
+                document.getElementById('nav-my-membership-btn').classList.add('active');
+                renderActiveMembership();
+            }
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-tab-classes').style.display = 'none';
+            document.getElementById('admin-tab-members').style.display = 'none';
+
+            if (tab === 'classes-mgmt') {
+                document.getElementById('admin-tab-classes').style.display = 'block';
+                renderAdminClasses();
+            } else if (tab === 'members') {
+                document.getElementById('admin-tab-members').style.display = 'block';
+                renderAdminMembers();
+            }
+        }
+
+        // Authentication Handlers
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-email').value || "member@fitpulse.com";
+                currentUser = { name: "David Miller", email, role: 'Member' };
+                document.getElementById('user-display-name').textContent = `Member: ${currentUser.name}`;
+                renderPlans();
+                showView('view-user-dashboard');
+            } else {
+                const adminName = document.getElementById('login-admin-name').value || "Trainer";
+                currentUser = { name: adminName, role: 'Trainer' };
+                document.getElementById('user-display-name').textContent = `Staff: ${currentUser.name}`;
+                renderAdminClasses();
+                showView('view-admin-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('FitPulse Account Created! Log in to choose your membership.');
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Member Operations
+        function renderPlans() {
+            const list = document.getElementById('membership-plans-list');
+            list.innerHTML = '';
+
+            plans.forEach(p => {
+                list.innerHTML += `
+                    <div class="plan-card ${p.isFeatured ? 'featured' : ''}">
+                        ${p.isFeatured ? '<span class="plan-badge">MOST POPULAR</span>' : ''}
+                        <h3>${p.name}</h3>
+                        <div class="plan-price">$${p.price.toFixed(2)}<span style="font-size:1rem; font-weight:normal; color:var(--text-light);">/mo</span></div>
+                        <ul class="plan-features">
+                            ${p.features.map(f => `<li>✓ ${f}</li>`).join('')}
+                        </ul>
+                        <button class="btn-submit" onclick="selectPlan('${p.name}', ${p.price})">Subscribe Now</button>
+                    </div>
+                `;
+            });
+        }
+
+        function selectPlan(name, price) {
+            activeMembership = { planName: name, status: 'Active', renewal: '2027-02-01' };
+            
+            memberBookings.push({
+                ref: 'BK-' + Math.floor(1000 + Math.random() * 9000),
+                memberName: currentUser.name,
+                item: `${name} Membership`,
+                type: 'Subscription',
+                status: `Paid ($${price.toFixed(2)})`
+            });
+
+            alert(`Subscribed to ${name} successfully!`);
+            switchUserTab('my-membership');
+        }
+
+        function renderUserClasses(items = fitnessClasses) {
+            const tbody = document.getElementById('user-classes-table');
+            tbody.innerHTML = '';
+
+            items.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${c.title}</strong></td>
+                        <td>${c.trainer}</td>
+                        <td>${c.schedule}</td>
+                        <td><span class="badge badge-success">${c.slots} Available</span></td>
+                        <td><button class="btn-submit" style="padding:0.3rem 0.8rem; width:auto;" onclick="bookClass(${c.id})">Reserve Spot</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterClasses() {
+            const search = document.getElementById('class-search').value.toLowerCase();
+            const day = document.getElementById('class-filter-day').value;
+
+            const filtered = fitnessClasses.filter(c => {
+                const matchesSearch = c.title.toLowerCase().includes(search) || c.trainer.toLowerCase().includes(search);
+                const matchesDay = day === 'All' || c.schedule.includes(day);
+                return matchesSearch && matchesDay;
+            });
+
+            renderUserClasses(filtered);
+        }
+
+        function bookClass(classId) {
+            const fitClass = fitnessClasses.find(c => c.id === classId);
+
+            if (fitClass.slots > 0) {
+                fitClass.slots--;
+                memberBookings.push({
+                    ref: 'BK-' + Math.floor(1000 + Math.random() * 9000),
+                    memberName: currentUser.name,
+                    item: fitClass.title,
+                    type: 'Class Booking',
+                    status: 'Confirmed'
+                });
+
+                alert(`Spot reserved for ${fitClass.title}!`);
+                renderUserClasses();
+            } else {
+                alert('Sorry, this class is fully booked.');
+            }
+        }
+
+        function renderActiveMembership() {
+            const container = document.getElementById('active-membership-details');
+            container.innerHTML = `
+                <div style="background:#0f172a; padding:1.5rem; border-radius:8px; border:1px solid var(--primary);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>💳 Digital Membership Pass</h3>
+                        <span class="badge badge-success">${activeMembership.status}</span>
+                    </div>
+                    <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--border);">
+                    <p><strong>Member Name:</strong> ${currentUser.name}</p>
+                    <p><strong>Current Plan:</strong> ${activeMembership.planName}</p>
+                    <p><strong>Next Renewal Date:</strong> ${activeMembership.renewal}</p>
+                </div>
+            `;
+        }
+
+        // Trainer & Admin Operations
+        function addClass(e) {
+            e.preventDefault();
+            const title = document.getElementById('adm-class-title').value;
+            const trainer = document.getElementById('adm-trainer').value;
+            const schedule = document.getElementById('adm-schedule').value;
+            const slots = parseInt(document.getElementById('adm-slots').value);
+
+            fitnessClasses.push({
+                id: fitnessClasses.length + 101,
+                title, trainer, schedule, slots
+            });
+
+            alert(`Class "${title}" scheduled!`);
+            e.target.reset();
+            renderAdminClasses();
+        }
+
+        function renderAdminClasses() {
+            const tbody = document.getElementById('admin-classes-table');
+            tbody.innerHTML = '';
+
+            fitnessClasses.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${c.title}</strong></td>
+                        <td>${c.trainer}</td>
+                        <td>${c.schedule}</td>
+                        <td>${c.slots} slots</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminMembers() {
+            const tbody = document.getElementById('admin-members-table');
+            tbody.innerHTML = '';
+
+            memberBookings.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${b.ref}</strong></td>
+                        <td>${b.memberName}</td>
+                        <td>${b.item}</td>
+                        <td>${b.type}</td>
+                        <td><span class="badge badge-success">${b.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

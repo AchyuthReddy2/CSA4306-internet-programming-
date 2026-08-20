@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Bus Pass Management System</title>
+
+<style>
+
+/* ================= GENERAL ================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #0f172a;
+    color: white;
+    padding: 22px;
+    text-align: center;
+}
+
+header h1 {
+    margin-bottom: 5px;
+}
+
+
+/* ================= LOGIN ================= */
+
+#loginPage {
+    min-height: 100vh;
+}
+
+.login-box {
+    width: 400px;
+    max-width: 90%;
+    margin: 60px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+textarea {
+    height: 90px;
+    resize: none;
+}
+
+.login-btn,
+.btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.login-btn {
+    width: 100%;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.login-btn:hover,
+.btn:hover {
+    background: #1d4ed8;
+}
+
+.demo {
+    background: #f8fafc;
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+
+/* ================= DASHBOARD ================= */
+
+.dashboard {
+    display: none;
+}
+
+.navbar {
+    background: #1e293b;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px;
+}
+
+.navbar h3 {
+    color: white;
+    margin-right: 20px;
+}
+
+.navbar button {
+    background: transparent;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.navbar button:hover {
+    background: #334155;
+    border-radius: 5px;
+}
+
+.logout {
+    margin-left: auto;
+    background: #dc2626 !important;
+    border-radius: 5px;
+}
+
+
+/* ================= CONTENT ================= */
+
+.content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 25px auto;
+}
+
+.page {
+    display: none;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.page.active {
+    display: block;
+}
+
+.page h2 {
+    margin-bottom: 20px;
+    color: #0f172a;
+}
+
+
+/* ================= CARDS ================= */
+
+.cards {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 20px;
+}
+
+.card {
+    background: #eff6ff;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.card h3 {
+    color: #1e40af;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+/* ================= TABLE ================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background: #1e293b;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+
+/* ================= STATUS ================= */
+
+.success {
+    color: green;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.pending {
+    color: orange;
+    font-weight: bold;
+}
+
+.approved {
+    color: green;
+    font-weight: bold;
+}
+
+.rejected {
+    color: red;
+    font-weight: bold;
+}
+
+
+/* ================= QR ================= */
+
+.qr-box {
+    width: 180px;
+    height: 180px;
+    border: 5px solid #111827;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #000 0px,
+            #000 5px,
+            #fff 5px,
+            #fff 10px
+        );
+    color: white;
+    font-weight: bold;
+}
+
+.qr-text {
+    background: white;
+    color: black;
+    padding: 10px;
+}
+
+
+/* ================= FOOTER ================= */
+
+footer {
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:700px) {
+
+    .navbar h3 {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .logout {
+        margin-left: 0;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- LOGIN PAGE -->
+<!-- ===================================================== -->
+
+<div id="loginPage">
+
+<header>
+
+<h1>🚌 Smart Bus Pass System</h1>
+
+<p>Bus Pass & Route Management Application</p>
+
+</header>
+
+
+<div class="login-box">
+
+<h2>Login</h2>
+
+
+<form onsubmit="login(event)">
+
+
+<div class="form-group">
+
+<label>Login Type</label>
+
+<select id="loginType" required>
+
+<option value="">
+-- Select Login Type --
+</option>
+
+<option value="user">
+User
+</option>
+
+<option value="admin">
+Admin
+</option>
+
+<option value="conductor">
+Conductor
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Username</label>
+
+<input
+type="text"
+id="username"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Password</label>
+
+<input
+type="password"
+id="password"
+required
+>
+
+</div>
+
+
+<button
+type="submit"
+class="login-btn">
+
+Login
+
+</button>
+
+</form>
+
+
+<div class="demo">
+
+<b>Demo Login</b>
+
+<br><br>
+
+👤 User:
+<b>user / 1234</b>
+
+<br>
+
+👨‍💼 Admin:
+<b>admin / 1234</b>
+
+<br>
+
+🚌 Conductor:
+<b>conductor / 1234</b>
+
+</div>
+
+
+<p
+id="loginError"
+style="color:red;text-align:center;margin-top:15px;">
+</p>
+
+
+</div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- USER DASHBOARD -->
+<!-- ===================================================== -->
+
+<div id="userDashboard" class="dashboard">
+
+
+<div class="navbar">
+
+<h3>👤 User Dashboard</h3>
+
+
+<button onclick="showPage('userHome')">
+Dashboard
+</button>
+
+
+<button onclick="showPage('userPass')">
+My Bus Pass
+</button>
+
+
+<button onclick="showPage('applyPass')">
+Apply Pass
+</button>
+
+
+<button onclick="showPage('eTicket')">
+Buy eTicket
+</button>
+
+
+<button onclick="showPage('wallet')">
+eWallet
+</button>
+
+
+<button onclick="showPage('route')">
+Route Information
+</button>
+
+
+<button onclick="showPage('travelTime')">
+Expected Time
+</button>
+
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- USER HOME -->
+
+<div id="userHome" class="page active">
+
+<h2>Welcome User 👋</h2>
+
+
+<div class="cards">
+
+
+<div class="card">
+
+<h3>Bus Pass</h3>
+
+<p>1</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>eTickets</h3>
+
+<p>4</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Wallet</h3>
+
+<p>₹850</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Pass Status</h3>
+
+<p>Active</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MY BUS PASS -->
+
+<div id="userPass" class="page">
+
+<h2>My Bus Pass</h2>
+
+
+<table>
+
+<tr>
+
+<th>Pass ID</th>
+
+<th>Name</th>
+
+<th>Pass Type</th>
+
+<th>Route</th>
+
+<th>Validity</th>
+
+<th>Status</th>
+
+</tr>
+
+
+<tr>
+
+<td>BP1001</td>
+
+<td>Rahul Kumar</td>
+
+<td>Student Pass</td>
+
+<td>Chennai - Tambaram</td>
+
+<td>31-08-2026</td>
+
+<td class="approved">
+Active
+</td>
+
+</tr>
+
+</table>
+
+
+<br>
+
+
+<div class="qr-box">
+
+<div class="qr-text">
+
+BP1001
+
+<br>
+
+BUS PASS
+
+</div>
+
+</div>
+
+
+<p style="text-align:center">
+
+<b>QR Code: BP1001</b>
+
+</p>
+
+</div>
+
+
+<!-- APPLY PASS -->
+
+<div id="applyPass" class="page">
+
+<h2>Apply New Bus Pass</h2>
+
+
+<form onsubmit="applyBusPass(event)">
+
+
+<div class="form-group">
+
+<label>Full Name</label>
+
+<input
+type="text"
+id="passName"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Address</label>
+
+<textarea
+id="passAddress"
+required>
+</textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Date of Birth</label>
+
+<input
+type="date"
+id="dob"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Email</label>
+
+<input
+type="email"
+id="email"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Pass Type</label>
+
+<select id="passType" required>
+
+<option value="">
+Select Pass Type
+</option>
+
+<option>
+Student Pass
+</option>
+
+<option>
+Route Pass
+</option>
+
+<option>
+General Pass
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Route</label>
+
+<select id="passRoute">
+
+<option>Chennai - Tambaram</option>
+
+<option>Chennai - Avadi</option>
+
+<option>Chennai - Chengalpattu</option>
+
+</select>
+
+</div>
+
+
+<button class="btn" type="submit">
+
+Apply Bus Pass
+
+</button>
+
+</form>
+
+
+<p id="passMessage" class="success"></p>
+
+</div>
+
+
+<!-- E TICKET -->
+
+<div id="eTicket" class="page">
+
+<h2>Buy Bus eTicket</h2>
+
+
+<form onsubmit="buyTicket(event)">
+
+
+<div class="form-group">
+
+<label>From</label>
+
+<select id="from">
+
+<option>Chennai</option>
+
+<option>Tambaram</option>
+
+<option>Avadi</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>To</label>
+
+<select id="to">
+
+<option>Tambaram</option>
+
+<option>Chengalpattu</option>
+
+<option>Avadi</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Travel Date</label>
+
+<input
+type="date"
+id="travelDate"
+required
+>
+
+</div>
+
+
+<button class="btn">
+
+Buy eTicket
+
+</button>
+
+</form>
+
+
+<p id="ticketMessage" class="success"></p>
+
+</div>
+
+
+<!-- WALLET -->
+
+<div id="wallet" class="page">
+
+<h2>eWallet</h2>
+
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Available Balance</h3>
+
+<p>₹850</p>
+
+</div>
+
+</div>
+
+
+<br>
+
+
+<form onsubmit="addMoney(event)">
+
+<div class="form-group">
+
+<label>Amount to Add</label>
+
+<input
+type="number"
+id="walletAmount"
+min="1"
+required
+>
+
+</div>
+
+
+<button class="btn">
+
+Add Money
+
+</button>
+
+</form>
+
+
+<p id="walletMessage" class="success"></p>
+
+</div>
+
+
+<!-- ROUTE -->
+
+<div id="route" class="page">
+
+<h2>Route Information</h2>
+
+
+<table>
+
+<tr>
+
+<th>Route ID</th>
+
+<th>From</th>
+
+<th>To</th>
+
+<th>Time</th>
+
+<th>Stops</th>
+
+</tr>
+
+
+<tr>
+
+<td>R001</td>
+
+<td>Chennai</td>
+
+<td>Tambaram</td>
+
+<td>08:00 AM</td>
+
+<td>Guindy, Saidapet</td>
+
+</tr>
+
+
+<tr>
+
+<td>R002</td>
+
+<td>Chennai</td>
+
+<td>Avadi</td>
+
+<td>09:00 AM</td>
+
+<td>Ambattur, Pattabiram</td>
+
+</tr>
+
+
+<tr>
+
+<td>R003</td>
+
+<td>Chennai</td>
+
+<td>Chengalpattu</td>
+
+<td>10:00 AM</td>
+
+<td>Tambaram, Vandalur</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- EXPECTED TIME -->
+
+<div id="travelTime" class="page">
+
+<h2>Calculate Expected Time</h2>
+
+
+<div class="form-group">
+
+<label>Select Route</label>
+
+<select id="timeRoute">
+
+<option value="45">
+Chennai - Tambaram
+</option>
+
+<option value="60">
+Chennai - Avadi
+</option>
+
+<option value="90">
+Chennai - Chengalpattu
+</option>
+
+</select>
+
+</div>
+
+
+<button
+class="btn"
+onclick="calculateTime()">
+
+Calculate Time
+
+</button>
+
+
+<p
+id="timeResult"
+class="success">
+</p>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Smart Bus Pass System © 2026
+
+</footer>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- ADMIN DASHBOARD -->
+<!-- ===================================================== -->
+
+<div id="adminDashboard" class="dashboard">
+
+
+<div class="navbar">
+
+<h3>👨‍💼 Admin Dashboard</h3>
+
+
+<button onclick="showPage('adminHome')">
+Dashboard
+</button>
+
+
+<button onclick="showPage('managePass')">
+Manage Pass
+</button>
+
+
+<button onclick="showPage('conductorLogin')">
+Conductor Login
+</button>
+
+
+<button onclick="showPage('busDetails')">
+Bus Details
+</button>
+
+
+<button onclick="showPage('routeDetails')">
+Route Details
+</button>
+
+
+<button onclick="showPage('adminQR')">
+Generate QR
+</button>
+
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- ADMIN HOME -->
+
+<div id="adminHome" class="page active">
+
+<h2>Administrator Dashboard</h2>
+
+
+<div class="cards">
+
+
+<div class="card">
+
+<h3>Total Users</h3>
+
+<p>520</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Pending Passes</h3>
+
+<p>25</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Conductors</h3>
+
+<p>35</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Routes</h3>
+
+<p>18</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MANAGE PASS -->
+
+<div id="managePass" class="page">
+
+<h2>Manage Student & Route Pass</h2>
+
+
+<table>
+
+<tr>
+
+<th>Pass ID</th>
+
+<th>User</th>
+
+<th>Type</th>
+
+<th>Route</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+
+<tr>
+
+<td>BP1001</td>
+
+<td>Rahul</td>
+
+<td>Student</td>
+
+<td>Chennai-Tambaram</td>
+
+<td class="pending">
+Pending
+</td>
+
+<td>
+
+<button
+class="btn"
+onclick="approvePass(this)">
+
+Approve
+
+</button>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>BP1002</td>
+
+<td>Arun</td>
+
+<td>Route</td>
+
+<td>Chennai-Avadi</td>
+
+<td class="approved">
+Approved
+</td>
+
+<td>
+
+<button class="btn">
+View
+</button>
+
+</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- CONDUCTOR LOGIN -->
+
+<div id="conductorLogin" class="page">
+
+<h2>Manage Conductor Login</h2>
+
+
+<table>
+
+<tr>
+
+<th>Conductor ID</th>
+
+<th>Name</th>
+
+<th>Route</th>
+
+<th>Status</th>
+
+</tr>
+
+
+<tr>
+
+<td>C001</td>
+
+<td>Ramesh</td>
+
+<td>Chennai-Tambaram</td>
+
+<td class="approved">
+Active
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>C002</td>
+
+<td>Suresh</td>
+
+<td>Chennai-Avadi</td>
+
+<td class="approved">
+Active
+</td>
+
+</tr>
+
+</table>
+
+
+<br>
+
+
+<button
+class="btn"
+onclick="alert('New conductor login created successfully')">
+
++ Create Conductor Login
+
+</button>
+
+</div>
+
+
+<!-- BUS DETAILS -->
+
+<div id="busDetails" class="page">
+
+<h2>Create Bus Details</h2>
+
+
+<form onsubmit="createBus(event)">
+
+
+<div class="form-group">
+
+<label>Bus Number</label>
+
+<input
+type="text"
+id="busNumber"
+placeholder="TN01AB1234"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Bus Type</label>
+
+<select id="busType">
+
+<option>Government Bus</option>
+
+<option>Private Bus</option>
+
+<option>Express Bus</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Route</label>
+
+<input
+type="text"
+id="busRoute"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Departure Time</label>
+
+<input
+type="time"
+id="departure"
+required
+>
+
+</div>
+
+
+<button class="btn">
+
+Create Bus
+
+</button>
+
+</form>
+
+
+<p id="busMessage" class="success"></p>
+
+</div>
+
+
+<!-- ROUTE DETAILS -->
+
+<div id="routeDetails" class="page">
+
+<h2>Create Route Information</h2>
+
+
+<form onsubmit="createRoute(event)">
+
+
+<div class="form-group">
+
+<label>From</label>
+
+<input
+type="text"
+id="routeFrom"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>To</label>
+
+<input
+type="text"
+id="routeTo"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Time</label>
+
+<input
+type="time"
+id="routeTime"
+required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Route Stops</label>
+
+<textarea
+id="stops"
+placeholder="Stop 1, Stop 2, Stop 3"
+required>
+</textarea>
+
+</div>
+
+
+<button class="btn">
+
+Create Route
+
+</button>
+
+</form>
+
+
+<p id="routeMessage" class="success"></p>
+
+</div>
+
+
+<!-- ADMIN QR -->
+
+<div id="adminQR" class="page">
+
+<h2>Generate Bus Pass QR Code</h2>
+
+
+<div class="form-group">
+
+<label>Enter Pass ID</label>
+
+<input
+type="text"
+id="qrPassId"
+placeholder="BP1001"
+>
+
+</div>
+
+
+<button
+class="btn"
+onclick="generateQR()">
+
+Generate QR
+
+</button>
+
+
+<div
+id="generatedQR"
+style="display:none;">
+
+<div class="qr-box">
+
+<div class="qr-text" id="qrText">
+
+BP1001
+
+</div>
+
+</div>
+
+<p style="text-align:center">
+
+QR Code Generated Successfully
+
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Smart Bus Pass System © 2026
+
+</footer>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- CONDUCTOR DASHBOARD -->
+<!-- ===================================================== -->
+
+<div id="conductorDashboard" class="dashboard">
+
+
+<div class="navbar">
+
+<h3>🚌 Conductor Dashboard</h3>
+
+
+<button onclick="showPage('conductorHome')">
+Dashboard
+</button>
+
+
+<button onclick="showPage('scanQR')">
+Scan QR
+</button>
+
+
+<button onclick="showPage('verifyPass')">
+Verify Pass
+</button>
+
+
+<button onclick="showPage('verifyTicket')">
+Verify Ticket
+</button>
+
+
+<button onclick="showPage('busLocation')">
+Update Location
+</button>
+
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- CONDUCTOR HOME -->
+
+<div id="conductorHome" class="page active">
+
+<h2>Welcome Conductor 🚌</h2>
+
+
+<div class="cards">
+
+
+<div class="card">
+
+<h3>Bus Number</h3>
+
+<p>TN01AB1234</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Route</h3>
+
+<p>Chennai-Tambaram</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Passengers</h3>
+
+<p>65</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Verified</h3>
+
+<p>48</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SCAN QR -->
+
+<div id="scanQR" class="page">
+
+<h2>Scan QR Code</h2>
+
+
+<div class="form-group">
+
+<label>Enter QR / Pass ID</label>
+
+<input
+type="text"
+id="scanId"
+placeholder="BP1001"
+>
+
+</div>
+
+
+<button
+class="btn"
+onclick="scanQR()">
+
+Scan QR
+
+</button>
+
+
+<p
+id="scanResult"
+class="success">
+</p>
+
+</div>
+
+
+<!-- VERIFY PASS -->
+
+<div id="verifyPass" class="page">
+
+<h2>Verify Bus Pass ID</h2>
+
+
+<div class="form-group">
+
+<label>Bus Pass ID</label>
+
+<input
+type="text"
+id="verifyPassId"
+placeholder="BP1001"
+>
+
+</div>
+
+
+<button
+class="btn"
+onclick="verifyBusPass()">
+
+Verify Pass
+
+</button>
+
+
+<p
+id="passVerifyResult"
+class="success">
+</p>
+
+</div>
+
+
+<!-- VERIFY TICKET -->
+
+<div id="verifyTicket" class="page">
+
+<h2>Verify Bus Ticket</h2>
+
+
+<div class="form-group">
+
+<label>Ticket ID</label>
+
+<input
+type="text"
+id="ticketId"
+placeholder="TKT1001"
+>
+
+</div>
+
+
+<button
+class="btn"
+onclick="verifyTicket()">
+
+Verify Ticket
+
+</button>
+
+
+<p
+id="ticketVerifyResult"
+class="success">
+</p>
+
+</div>
+
+
+<!-- BUS LOCATION -->
+
+<div id="busLocation" class="page">
+
+<h2>Update Bus Location</h2>
+
+
+<div class="form-group">
+
+<label>Current Location</label>
+
+<input
+type="text"
+id="currentLocation"
+placeholder="Tambaram Bus Stand"
+>
+
+</div>
+
+
+<button
+class="btn"
+onclick="updateLocation()">
+
+Update Location
+
+</button>
+
+
+<p
+id="locationMessage"
+class="success">
+</p>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Smart Bus Pass System © 2026
+
+</footer>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+
+/* ================= LOGIN ================= */
+
+function login(event) {
+
+    event.preventDefault();
+
+    let role =
+        document.getElementById("loginType").value;
+
+    let username =
+        document.getElementById("username").value;
+
+    let password =
+        document.getElementById("password").value;
+
+
+    let valid = false;
+
+
+    if (
+        role === "user" &&
+        username === "user" &&
+        password === "1234"
+    ) {
+
+        valid = true;
+
+        showDashboard("userDashboard");
+
+    }
+
+
+    else if (
+        role === "admin" &&
+        username === "admin" &&
+        password === "1234"
+    ) {
+
+        valid = true;
+
+        showDashboard("adminDashboard");
+
+    }
+
+
+    else if (
+        role === "conductor" &&
+        username === "conductor" &&
+        password === "1234"
+    ) {
+
+        valid = true;
+
+        showDashboard("conductorDashboard");
+
+    }
+
+
+    if (!valid) {
+
+        document.getElementById("loginError").innerText =
+            "Invalid login details.";
+
+    }
+
+}
+
+
+/* ================= SHOW DASHBOARD ================= */
+
+function showDashboard(id) {
+
+    document.getElementById("loginPage")
+        .style.display = "none";
+
+
+    document.querySelectorAll(".dashboard")
+        .forEach(function(dashboard) {
+
+            dashboard.style.display = "none";
+
+        });
+
+
+    document.getElementById(id)
+        .style.display = "block";
+
+}
+
+
+/* ================= PAGE NAVIGATION ================= */
+
+function showPage(id) {
+
+    let pages =
+        document.querySelectorAll(".page");
+
+
+    pages.forEach(function(page) {
+
+        page.classList.remove("active");
+
+    });
+
+
+    document.getElementById(id)
+        .classList.add("active");
+
+}
+
+
+/* ================= LOGOUT ================= */
+
+function logout() {
+
+    document.querySelectorAll(".dashboard")
+        .forEach(function(dashboard) {
+
+            dashboard.style.display = "none";
+
+        });
+
+
+    document.getElementById("loginPage")
+        .style.display = "block";
+
+
+    document.getElementById("username").value = "";
+
+    document.getElementById("password").value = "";
+
+    document.getElementById("loginType").value = "";
+
+}
+
+
+/* ================= APPLY BUS PASS ================= */
+
+function applyBusPass(event) {
+
+    event.preventDefault();
+
+
+    let name =
+        document.getElementById("passName").value;
+
+    let type =
+        document.getElementById("passType").value;
+
+
+    document.getElementById("passMessage").innerText =
+
+        "✓ Bus pass application submitted successfully for "
+        + name
+        + " (" + type + "). Waiting for admin approval.";
+
+}
+
+
+/* ================= BUY TICKET ================= */
+
+function buyTicket(event) {
+
+    event.preventDefault();
+
+
+    let from =
+        document.getElementById("from").value;
+
+    let to =
+        document.getElementById("to").value;
+
+
+    document.getElementById("ticketMessage").innerText =
+
+        "✓ eTicket booked successfully from "
+        + from
+        + " to "
+        + to
+        + ". Ticket ID: TKT1001";
+
+}
+
+
+/* ================= WALLET ================= */
+
+function addMoney(event) {
+
+    event.preventDefault();
+
+
+    let amount =
+        document.getElementById("walletAmount").value;
+
+
+    document.getElementById("walletMessage").innerText =
+
+        "✓ ₹"
+        + amount
+        + " added successfully to your eWallet.";
+
+}
+
+
+/* ================= EXPECTED TIME ================= */
+
+function calculateTime() {
+
+    let time =
+        document.getElementById("timeRoute").value;
+
+
+    document.getElementById("timeResult").innerText =
+
+        "Expected travel time: "
+        + time
+        + " minutes.";
+
+}
+
+
+/* ================= ADMIN APPROVE ================= */
+
+function approvePass(button) {
+
+    let row =
+        button.parentElement.parentElement;
+
+
+    let status =
+        row.cells[4];
+
+
+    status.innerText = "Approved";
+
+    status.className = "approved";
+
+
+    button.innerText = "Approved";
+
+    button.disabled = true;
+
+}
+
+
+/* ================= CREATE BUS ================= */
+
+function createBus(event) {
+
+    event.preventDefault();
+
+
+    let bus =
+        document.getElementById("busNumber").value;
+
+
+    document.getElementById("busMessage").innerText =
+
+        "✓ Bus "
+        + bus
+        + " created successfully.";
+
+}
+
+
+/* ================= CREATE ROUTE ================= */
+
+function createRoute(event) {
+
+    event.preventDefault();
+
+
+    let from =
+        document.getElementById("routeFrom").value;
+
+    let to =
+        document.getElementById("routeTo").value;
+
+
+    document.getElementById("routeMessage").innerText =
+
+        "✓ Route created successfully: "
+        + from
+        + " → "
+        + to;
+
+}
+
+
+/* ================= GENERATE QR ================= */
+
+function generateQR() {
+
+    let id =
+        document.getElementById("qrPassId").value;
+
+
+    if (id === "") {
+
+        alert("Please enter Pass ID.");
+
+        return;
+
+    }
+
+
+    document.getElementById("generatedQR")
+        .style.display = "block";
+
+
+    document.getElementById("qrText")
+        .innerText = id;
+
+}
+
+
+/* ================= SCAN QR ================= */
+
+function scanQR() {
+
+    let id =
+        document.getElementById("scanId").value;
+
+
+    if (id === "BP1001") {
+
+        document.getElementById("scanResult").innerText =
+
+            "✓ QR verified successfully. Pass belongs to Rahul Kumar.";
+
+    }
+
+    else {
+
+        document.getElementById("scanResult").innerText =
+
+            "✗ Invalid QR / Pass ID.";
+
+    }
+
+}
+
+
+/* ================= VERIFY PASS ================= */
+
+function verifyBusPass() {
+
+    let id =
+        document.getElementById("verifyPassId").value;
+
+
+    if (id === "BP1001") {
+
+        document.getElementById("passVerifyResult").innerText =
+
+            "✓ Bus Pass BP1001 is valid and active.";
+
+    }
+
+    else {
+
+        document.getElementById("passVerifyResult").innerText =
+
+            "✗ Bus Pass not found.";
+
+    }
+
+}
+
+
+/* ================= VERIFY TICKET ================= */
+
+function verifyTicket() {
+
+    let id =
+        document.getElementById("ticketId").value;
+
+
+    if (id === "TKT1001") {
+
+        document.getElementById("ticketVerifyResult").innerText =
+
+            "✓ Ticket TKT1001 is valid.";
+
+    }
+
+    else {
+
+        document.getElementById("ticketVerifyResult").innerText =
+
+            "✗ Invalid ticket.";
+
+    }
+
+}
+
+
+/* ================= UPDATE LOCATION ================= */
+
+function updateLocation() {
+
+    let location =
+        document.getElementById("currentLocation").value;
+
+
+    if (location === "") {
+
+        alert("Enter current location.");
+
+        return;
+
+    }
+
+
+    document.getElementById("locationMessage").innerText =
+
+        "✓ Bus location updated successfully: "
+        + location;
+
+}
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventPulse - Online Event Management & Ticket Booking Portal (Exp 21)</title>
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-hover: #6d28d9;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #a78bfa;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: none;
+            border: none;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .nav-links button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success); }
+        .badge-warning { background-color: var(--accent); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .event-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .event-tag {
+            background: #f3e8ff;
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            width: fit-content;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .event-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="logo">🎟️ EventPulse Management Portal</div>
+        <div id="header-user-info" class="user-info" style="display: none;">
+            <span id="user-display-name">Welcome User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. AUTHENTICATION MODULE -->
+        <div id="view-auth" class="page-view active">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <div class="tab-group">
+                        <button class="tab-btn active" onclick="switchAuthTab('user-login')">Attendee Login</button>
+                        <button class="tab-btn" onclick="switchAuthTab('user-register')">Register Attendee</button>
+                        <button class="tab-btn" onclick="switchAuthTab('organizer-login')">Organizer Login</button>
+                    </div>
+
+                    <!-- Attendee Login -->
+                    <form id="form-user-login" onsubmit="handleAuth(event, 'user')">
+                        <h2 style="border:none; text-align:center;">Attendee Portal</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="login-user-email" value="attendee@eventpulse.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="password" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Login & Explore Events</button>
+                    </form>
+
+                    <!-- Attendee Registration -->
+                    <form id="form-user-register" style="display: none;" onsubmit="handleRegister(event)">
+                        <h2 style="border:none; text-align:center;">Register New Attendee</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="Sophia Miller" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" placeholder="+1 555-0192" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="sophia@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Create Account</button>
+                    </form>
+
+                    <!-- Event Organizer Login -->
+                    <form id="form-organizer-login" style="display: none;" onsubmit="handleAuth(event, 'organizer')">
+                        <h2 style="border:none; text-align:center;">Event Organizer Login</h2>
+                        <div class="form-group">
+                            <label>Organizer Email</label>
+                            <input type="email" id="login-org-email" value="organizer@eventpulse.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" value="org123" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--secondary);">Login to Organizer Dashboard</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ATTENDEE DASHBOARD -->
+        <div id="view-user-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="u-nav-events" class="active" onclick="switchUserTab('events')">Browse Events</button>
+                <button id="u-nav-tickets" onclick="switchUserTab('tickets')">My Booked Tickets</button>
+                <button id="u-nav-profile" onclick="switchUserTab('profile')">My Profile</button>
+            </div>
+
+            <!-- Browse Events -->
+            <div id="user-tab-events">
+                <div class="card">
+                    <h2>Upcoming Events & Conferences</h2>
+                    <div class="grid-3" id="events-list-container">
+                        <!-- Dynamically Populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Tickets -->
+            <div id="user-tab-tickets" style="display: none;">
+                <div class="card">
+                    <h2>My Event Bookings & Passes</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking Ref</th>
+                                <th>Event Name</th>
+                                <th>Date & Time</th>
+                                <th>Venue</th>
+                                <th>Seats</th>
+                                <th>Amount Paid</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-tickets-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div id="user-tab-profile" style="display: none;">
+                <div class="card">
+                    <h2>Attendee Profile</h2>
+                    <div id="attendee-profile-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ORGANIZER DASHBOARD -->
+        <div id="view-organizer-dashboard" class="page-view">
+            <div class="nav-links">
+                <button id="o-nav-manage" class="active" onclick="switchOrgTab('manage')">Manage Events</button>
+                <button id="o-nav-create" onclick="switchOrgTab('create')">Create New Event</button>
+                <button id="o-nav-bookings" onclick="switchOrgTab('bookings')">Attendee Bookings</button>
+            </div>
+
+            <!-- Manage Events -->
+            <div id="org-tab-manage">
+                <div class="card">
+                    <h2>Published Events Directory</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Venue</th>
+                                <th>Price</th>
+                                <th>Tickets Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody id="org-events-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Create Event -->
+            <div id="org-tab-create" style="display: none;">
+                <div class="card">
+                    <h2>Host New Event</h2>
+                    <form onsubmit="createNewEvent(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Event Title</label>
+                                <input type="text" id="ev-title" placeholder="Global AI & Tech Summit 2026" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="ev-category">
+                                    <option value="Technology">Technology & AI</option>
+                                    <option value="Music & Concerts">Music & Concerts</option>
+                                    <option value="Business">Business & Finance</option>
+                                    <option value="Workshop">Educational Workshop</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Date & Time</label>
+                                <input type="datetime-local" id="ev-datetime" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Venue / Location</label>
+                                <input type="text" id="ev-venue" placeholder="Grand Convention Center, Hall B" required>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Ticket Price ($)</label>
+                                <input type="number" id="ev-price" min="0" value="49" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Total Available Capacity</label>
+                                <input type="number" id="ev-capacity" min="10" value="150" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Publish Event</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Attendee Bookings -->
+            <div id="org-tab-bookings" style="display: none;">
+                <div class="card">
+                    <h2>Master Registration & Ticket Sales</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref ID</th>
+                                <th>Attendee Name</th>
+                                <th>Event Title</th>
+                                <th>Tickets</th>
+                                <th>Total Revenue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="org-bookings-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let currentUser = null;
+
+        let eventsList = [
+            { id: 1, title: 'Global Tech & AI Summit 2026', category: 'Technology', date: '2026-09-15 10:00 AM', venue: 'Grand City Convention Center', price: 49.00, capacity: 200, sold: 42 },
+            { id: 2, title: 'International Design & Web Expo', category: 'Workshop', date: '2026-09-22 02:00 PM', venue: 'Innovation Hub, Floor 3', price: 29.00, capacity: 100, sold: 18 },
+            { id: 3, title: 'Symphony Under The Stars', category: 'Music & Concerts', date: '2026-10-05 07:00 PM', venue: 'Open Air Amphitheater', price: 65.00, capacity: 500, sold: 130 }
+        ];
+
+        let bookingsList = [
+            { ref: 'EVT-77210', attendee: 'Sophia Miller', eventId: 1, eventTitle: 'Global Tech & AI Summit 2026', date: '2026-09-15 10:00 AM', venue: 'Grand City Convention Center', seats: 2, amount: '$98.00', status: 'Confirmed' }
+        ];
+
+        // Navigation
+        function showView(viewId) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('header-user-info').style.display = (viewId === 'view-auth') ? 'none' : 'flex';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-card .tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById('form-user-login').style.display = 'none';
+            document.getElementById('form-user-register').style.display = 'none';
+            document.getElementById('form-organizer-login').style.display = 'none';
+
+            if (tab === 'user-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-login').style.display = 'block';
+            } else if (tab === 'user-register') {
+                event.target.classList.add('active');
+                document.getElementById('form-user-register').style.display = 'block';
+            } else if (tab === 'organizer-login') {
+                event.target.classList.add('active');
+                document.getElementById('form-organizer-login').style.display = 'block';
+            }
+        }
+
+        function switchUserTab(tab) {
+            ['events', 'tickets', 'profile'].forEach(t => {
+                document.getElementById(`user-tab-${t}`).style.display = 'none';
+                document.getElementById(`u-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`user-tab-${tab}`).style.display = 'block';
+            document.getElementById(`u-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'events') renderUserEvents();
+            if (tab === 'tickets') renderUserTickets();
+            if (tab === 'profile') renderAttendeeProfile();
+        }
+
+        function switchOrgTab(tab) {
+            ['manage', 'create', 'bookings'].forEach(t => {
+                document.getElementById(`org-tab-${t}`).style.display = 'none';
+                document.getElementById(`o-nav-${t}`)?.classList.remove('active');
+            });
+
+            document.getElementById(`org-tab-${tab}`).style.display = 'block';
+            document.getElementById(`o-nav-${tab}`)?.classList.add('active');
+
+            if (tab === 'manage') renderOrgEvents();
+            if (tab === 'bookings') renderOrgBookings();
+        }
+
+        // Auth
+        function handleAuth(e, role) {
+            e.preventDefault();
+            if (role === 'user') {
+                const email = document.getElementById('login-user-email').value || "attendee@eventpulse.com";
+                currentUser = { name: "Sophia Miller", email, phone: "+1 555-0192", role: 'Attendee' };
+                document.getElementById('user-display-name').textContent = `Attendee: ${currentUser.name}`;
+                switchUserTab('events');
+                showView('view-user-dashboard');
+            } else {
+                currentUser = { name: "Event Organizer", role: 'Organizer' };
+                document.getElementById('user-display-name').textContent = `Organizer Portal`;
+                switchOrgTab('manage');
+                showView('view-organizer-dashboard');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Registration successful! Please login with your credentials.');
+            switchAuthTab('user-login');
+        }
+
+        function logout() {
+            currentUser = null;
+            showView('view-auth');
+        }
+
+        // Attendee Actions
+        function renderUserEvents() {
+            const container = document.getElementById('events-list-container');
+            container.innerHTML = '';
+
+            eventsList.forEach(ev => {
+                container.innerHTML += `
+                    <div class="event-card">
+                        <div>
+                            <span class="event-tag">${ev.category}</span>
+                            <div class="event-title">${ev.title}</div>
+                            <div class="event-meta">
+                                📅 ${ev.date}<br>
+                                📍 ${ev.venue}<br>
+                                🎟️ ${ev.capacity - ev.sold} tickets left
+                            </div>
+                        </div>
+                        <div>
+                            <div class="event-price">$${ev.price.toFixed(2)}</div>
+                            <button class="btn-submit" onclick="bookTicket(${ev.id})">Book Tickets</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function bookTicket(eventId) {
+            const ev = eventsList.find(e => e.id === eventId);
+            if (!ev) return;
+
+            const qtyStr = prompt(`How many tickets for "${ev.title}"?`, '1');
+            const qty = parseInt(qtyStr);
+
+            if (isNaN(qty) || qty <= 0) return;
+
+            if (ev.sold + qty > ev.capacity) {
+                alert('Not enough tickets remaining for this event!');
+                return;
+            }
+
+            ev.sold += qty;
+            const totalFare = ev.price * qty;
+            const ref = 'EVT-' + Math.floor(10000 + Math.random() * 90000);
+
+            bookingsList.unshift({
+                ref,
+                attendee: currentUser.name,
+                eventId: ev.id,
+                eventTitle: ev.title,
+                date: ev.date,
+                venue: ev.venue,
+                seats: qty,
+                amount: `$${totalFare.toFixed(2)}`,
+                status: 'Confirmed'
+            });
+
+            alert(`Success! Booked ${qty} ticket(s) for ${ev.title}. Pass Ref: ${ref}`);
+            switchUserTab('tickets');
+        }
+
+        function renderUserTickets() {
+            const tbody = document.getElementById('user-tickets-table');
+            tbody.innerHTML = '';
+            bookingsList.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${b.ref}</strong></td>
+                        <td>${b.eventTitle}</td>
+                        <td>${b.date}</td>
+                        <td>${b.venue}</td>
+                        <td>${b.seats} Seat(s)</td>
+                        <td>${b.amount}</td>
+                        <td><span class="badge badge-success">${b.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAttendeeProfile() {
+            const box = document.getElementById('attendee-profile-box');
+            box.innerHTML = `
+                <p><strong>Full Name:</strong> ${currentUser.name}</p>
+                <p><strong>Email Address:</strong> ${currentUser.email}</p>
+                <p><strong>Phone:</strong> ${currentUser.phone}</p>
+                <p><strong>Total Tickets Booked:</strong> ${bookingsList.length}</p>
+            `;
+        }
+
+        // Organizer Actions
+        function createNewEvent(e) {
+            e.preventDefault();
+            const title = document.getElementById('ev-title').value;
+            const category = document.getElementById('ev-category').value;
+            const datetime = document.getElementById('ev-datetime').value;
+            const venue = document.getElementById('ev-venue').value;
+            const price = parseFloat(document.getElementById('ev-price').value);
+            const capacity = parseInt(document.getElementById('ev-capacity').value);
+
+            eventsList.push({
+                id: eventsList.length + 1,
+                title, category, date: datetime.replace('T', ' '), venue, price, capacity, sold: 0
+            });
+
+            alert(`Event "${title}" published successfully!`);
+            e.target.reset();
+            switchOrgTab('manage');
+        }
+
+        function renderOrgEvents() {
+            const tbody = document.getElementById('org-events-table');
+            tbody.innerHTML = '';
+            eventsList.forEach(ev => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${ev.title}</strong></td>
+                        <td>${ev.category}</td>
+                        <td>${ev.date}</td>
+                        <td>${ev.venue}</td>
+                        <td>$${ev.price.toFixed(2)}</td>
+                        <td><span class="badge badge-success">${ev.sold} / ${ev.capacity}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderOrgBookings() {
+            const tbody = document.getElementById('org-bookings-table');
+            tbody.innerHTML = '';
+            bookingsList.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${b.ref}</strong></td>
+                        <td>${b.attendee}</td>
+                        <td>${b.eventTitle}</td>
+                        <td>${b.seats} Ticket(s)</td>
+                        <td>${b.amount}</td>
+                        <td><span class="badge badge-success">${b.status}</span></td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

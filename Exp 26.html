@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Traffic Squad - Penalty Management</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+}
+
+/* HEADER */
+
+header {
+    background: #0f172a;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin-bottom: 5px;
+}
+
+/* LOGIN PAGE */
+
+.login-container {
+    width: 400px;
+    max-width: 90%;
+    margin: 70px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #0f172a;
+}
+
+.login-container label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.login-container input,
+.login-container select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background: #1d4ed8;
+}
+
+.demo {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+/* DASHBOARD */
+
+.dashboard {
+    display: none;
+}
+
+.navbar {
+    background: #1e293b;
+    padding: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.navbar h3 {
+    color: white;
+    margin-right: 20px;
+}
+
+.navbar button {
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.navbar button:hover {
+    background: #334155;
+    border-radius: 5px;
+}
+
+.logout {
+    margin-left: auto;
+    background: #dc2626 !important;
+    border-radius: 5px;
+}
+
+/* CONTENT */
+
+.content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 25px auto;
+}
+
+.page {
+    display: none;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.page.active {
+    display: block;
+}
+
+.page h2 {
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+/* CARDS */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    padding: 25px;
+    border-radius: 10px;
+    background: #eff6ff;
+    text-align: center;
+}
+
+.card h3 {
+    margin-bottom: 10px;
+    color: #1e3a8a;
+}
+
+.card p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* FORM */
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+textarea {
+    height: 100px;
+}
+
+.btn {
+    padding: 11px 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+/* TABLE */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background: #1e293b;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+/* STATUS */
+
+.paid {
+    color: green;
+    font-weight: bold;
+}
+
+.unpaid {
+    color: red;
+    font-weight: bold;
+}
+
+.pending {
+    color: orange;
+    font-weight: bold;
+}
+
+.success {
+    margin-top: 15px;
+    color: green;
+    font-weight: bold;
+}
+
+footer {
+    margin-top: 30px;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- LOGIN PAGE -->
+<!-- ===================================================== -->
+
+<div id="loginPage">
+
+<header>
+
+<h1>🚦 Traffic Squad</h1>
+
+<p>Penalty Collection & Management System</p>
+
+</header>
+
+
+<div class="login-container">
+
+<h2>System Login</h2>
+
+
+<form onsubmit="login(event)">
+
+<div class="form-group">
+
+<label>Select Login Type</label>
+
+<select id="loginType" required>
+
+<option value="">-- Select Role --</option>
+
+<option value="user">User</option>
+
+<option value="police">Police</option>
+
+<option value="admin">Admin</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Username</label>
+
+<input type="text" id="username" required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Password</label>
+
+<input type="password" id="password" required>
+
+</div>
+
+
+<button class="login-btn" type="submit">
+
+Login
+
+</button>
+
+</form>
+
+
+<div class="demo">
+
+<b>Demo Login</b>
+
+<br><br>
+
+User → user / 1234
+
+<br>
+
+Police → police / 1234
+
+<br>
+
+Admin → admin / 1234
+
+</div>
+
+<p id="loginError" style="color:red;text-align:center;margin-top:15px;"></p>
+
+</div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- USER DASHBOARD -->
+<!-- ===================================================== -->
+
+<div id="userDashboard" class="dashboard">
+
+<div class="navbar">
+
+<h3>👤 User Dashboard</h3>
+
+<button onclick="showPage('userHome')">
+Dashboard
+</button>
+
+<button onclick="showPage('userChallan')">
+View Challan
+</button>
+
+<button onclick="showPage('userCases')">
+View Case Filed
+</button>
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- USER HOME -->
+
+<div id="userHome" class="page active">
+
+<h2>Welcome User 👋</h2>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Total Challans</h3>
+
+<p>3</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Unpaid Challans</h3>
+
+<p>2</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Total Fine</h3>
+
+<p>₹3500</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- USER CHALLAN -->
+
+<div id="userChallan" class="page">
+
+<h2>View Challan</h2>
+
+<table>
+
+<tr>
+
+<th>Challan ID</th>
+
+<th>Vehicle No</th>
+
+<th>Violation</th>
+
+<th>Fine</th>
+
+<th>Status</th>
+
+</tr>
+
+
+<tr>
+
+<td>C001</td>
+
+<td>TN01AB1234</td>
+
+<td>Signal Violation</td>
+
+<td>₹1000</td>
+
+<td class="unpaid">Unpaid</td>
+
+</tr>
+
+
+<tr>
+
+<td>C002</td>
+
+<td>TN01AB1234</td>
+
+<td>Over Speeding</td>
+
+<td>₹1500</td>
+
+<td class="paid">Paid</td>
+
+</tr>
+
+
+<tr>
+
+<td>C003</td>
+
+<td>TN01AB1234</td>
+
+<td>Wrong Parking</td>
+
+<td>₹1000</td>
+
+<td class="unpaid">Unpaid</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- USER CASES -->
+
+<div id="userCases" class="page">
+
+<h2>View Case Filed</h2>
+
+<table>
+
+<tr>
+
+<th>Case ID</th>
+
+<th>Vehicle</th>
+
+<th>Violation</th>
+
+<th>Date</th>
+
+<th>Status</th>
+
+</tr>
+
+
+<tr>
+
+<td>CASE001</td>
+
+<td>TN01AB1234</td>
+
+<td>Signal Violation</td>
+
+<td>08-08-2026</td>
+
+<td class="pending">Pending</td>
+
+</tr>
+
+
+<tr>
+
+<td>CASE002</td>
+
+<td>TN01AB1234</td>
+
+<td>Over Speeding</td>
+
+<td>05-08-2026</td>
+
+<td class="paid">Closed</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+</div>
+
+<footer>
+
+Traffic Squad © 2026
+
+</footer>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- POLICE DASHBOARD -->
+<!-- ===================================================== -->
+
+<div id="policeDashboard" class="dashboard">
+
+<div class="navbar">
+
+<h3>👮 Police Dashboard</h3>
+
+<button onclick="showPage('policeHome')">
+Dashboard
+</button>
+
+<button onclick="showPage('rules')">
+Rules
+</button>
+
+<button onclick="showPage('createCase')">
+Create Case
+</button>
+
+<button onclick="showPage('trafficReport')">
+Traffic Report
+</button>
+
+<button onclick="openMap()">
+Google Maps
+</button>
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- POLICE HOME -->
+
+<div id="policeHome" class="page active">
+
+<h2>Welcome Police Officer 👮</h2>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Cases Today</h3>
+
+<p>18</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Cases Pending</h3>
+
+<p>7</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Fine Collected</h3>
+
+<p>₹25,000</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- RULES -->
+
+<div id="rules" class="page">
+
+<h2>Traffic Rules</h2>
+
+<table>
+
+<tr>
+
+<th>Rule</th>
+
+<th>Violation</th>
+
+<th>Fine</th>
+
+</tr>
+
+
+<tr>
+
+<td>Rule 1</td>
+
+<td>Signal Violation</td>
+
+<td>₹1000</td>
+
+</tr>
+
+
+<tr>
+
+<td>Rule 2</td>
+
+<td>Over Speeding</td>
+
+<td>₹1500</td>
+
+</tr>
+
+
+<tr>
+
+<td>Rule 3</td>
+
+<td>Wrong Parking</td>
+
+<td>₹1000</td>
+
+</tr>
+
+
+<tr>
+
+<td>Rule 4</td>
+
+<td>Without Helmet</td>
+
+<td>₹500</td>
+
+</tr>
+
+
+<tr>
+
+<td>Rule 5</td>
+
+<td>Without Seat Belt</td>
+
+<td>₹1000</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- CREATE CASE -->
+
+<div id="createCase" class="page">
+
+<h2>Create Traffic Case</h2>
+
+
+<form onsubmit="createTrafficCase(event)">
+
+
+<div class="form-group">
+
+<label>Vehicle Owner Name</label>
+
+<input type="text" id="ownerName" required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Vehicle Number</label>
+
+<input
+type="text"
+id="caseVehicle"
+placeholder="TN01AB1234"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Violation</label>
+
+<select id="violation" required>
+
+<option value="">Select Violation</option>
+
+<option>Signal Violation</option>
+
+<option>Over Speeding</option>
+
+<option>Wrong Parking</option>
+
+<option>Driving Without Helmet</option>
+
+<option>Driving Without Seat Belt</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Fine Amount</label>
+
+<input
+type="number"
+id="fine"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Upload Proof Photo</label>
+
+<input
+type="file"
+id="proof"
+accept="image/*"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Case Description</label>
+
+<textarea
+id="description"
+placeholder="Enter case details..."
+required>
+</textarea>
+
+</div>
+
+
+<button class="btn" type="submit">
+
+Create Case
+
+</button>
+
+</form>
+
+
+<p id="caseMessage" class="success"></p>
+
+</div>
+
+
+<!-- TRAFFIC REPORT -->
+
+<div id="trafficReport" class="page">
+
+<h2>Live Traffic Report</h2>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Vehicles</h3>
+
+<p>125</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Violations</h3>
+
+<p>18</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Reports</h3>
+
+<p>10</p>
+
+</div>
+
+</div>
+
+
+<br>
+
+<h3>Latest Traffic Reports</h3>
+
+<table>
+
+<tr>
+
+<th>Location</th>
+
+<th>Violation</th>
+
+<th>Time</th>
+
+</tr>
+
+
+<tr>
+
+<td>Anna Salai</td>
+
+<td>Over Speeding</td>
+
+<td>10:30 AM</td>
+
+</tr>
+
+
+<tr>
+
+<td>Mount Road</td>
+
+<td>Signal Violation</td>
+
+<td>11:15 AM</td>
+
+</tr>
+
+
+<tr>
+
+<td>OMR</td>
+
+<td>Wrong Parking</td>
+
+<td>12:05 PM</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+</div>
+
+<footer>
+
+Traffic Squad © 2026
+
+</footer>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- ADMIN DASHBOARD -->
+<!-- ===================================================== -->
+
+<div id="adminDashboard" class="dashboard">
+
+<div class="navbar">
+
+<h3>⚙️ Admin Dashboard</h3>
+
+<button onclick="showPage('adminHome')">
+Dashboard
+</button>
+
+<button onclick="showPage('policeAccounts')">
+Manage Police Login
+</button>
+
+<button onclick="showPage('dailyReport')">
+Daily Report
+</button>
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- ADMIN HOME -->
+
+<div id="adminHome" class="page active">
+
+<h2>Welcome Administrator ⚙️</h2>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Police Officers</h3>
+
+<p>25</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Total Cases</h3>
+
+<p>120</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Total Fine</h3>
+
+<p>₹1,25,000</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>Reports</h3>
+
+<p>30</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- POLICE ACCOUNT -->
+
+<div id="policeAccounts" class="page">
+
+<h2>Manage Police Login</h2>
+
+<table>
+
+<tr>
+
+<th>Police ID</th>
+
+<th>Name</th>
+
+<th>Station</th>
+
+<th>Status</th>
+
+</tr>
+
+
+<tr>
+
+<td>P001</td>
+
+<td>Ravi Kumar</td>
+
+<td>Chennai Central</td>
+
+<td class="paid">Active</td>
+
+</tr>
+
+
+<tr>
+
+<td>P002</td>
+
+<td>Arun Kumar</td>
+
+<td>Adyar</td>
+
+<td class="paid">Active</td>
+
+</tr>
+
+
+<tr>
+
+<td>P003</td>
+
+<td>Suresh</td>
+
+<td>Tambaram</td>
+
+<td class="paid">Active</td>
+
+</tr>
+
+</table>
+
+<br>
+
+<button
+class="btn"
+onclick="alert('New Police Login Created Successfully')">
+
++ Create Police Login
+
+</button>
+
+</div>
+
+
+<!-- DAILY REPORT -->
+
+<div id="dailyReport" class="page">
+
+<h2>Daily Traffic Report</h2>
+
+<table>
+
+<tr>
+
+<th>Date</th>
+
+<th>Cases Filed</th>
+
+<th>Fine Collected</th>
+
+<th>Status</th>
+
+</tr>
+
+
+<tr>
+
+<td>08-08-2026</td>
+
+<td>18</td>
+
+<td>₹25,000</td>
+
+<td class="paid">Completed</td>
+
+</tr>
+
+
+<tr>
+
+<td>07-08-2026</td>
+
+<td>22</td>
+
+<td>₹32,000</td>
+
+<td class="paid">Completed</td>
+
+</tr>
+
+
+<tr>
+
+<td>06-08-2026</td>
+
+<td>15</td>
+
+<td>₹20,000</td>
+
+<td class="paid">Completed</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+</div>
+
+<footer>
+
+Traffic Squad © 2026
+
+</footer>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+
+/* LOGIN */
+
+function login(event) {
+
+    event.preventDefault();
+
+    let role =
+        document.getElementById("loginType").value;
+
+    let username =
+        document.getElementById("username").value;
+
+    let password =
+        document.getElementById("password").value;
+
+
+    let valid = false;
+
+
+    if (
+        role === "user" &&
+        username === "user" &&
+        password === "1234"
+    ) {
+
+        valid = true;
+
+        showDashboard("userDashboard");
+
+    }
+
+
+    else if (
+        role === "police" &&
+        username === "police" &&
+        password === "1234"
+    ) {
+
+        valid = true;
+
+        showDashboard("policeDashboard");
+
+    }
+
+
+    else if (
+        role === "admin" &&
+        username === "admin" &&
+        password === "1234"
+    ) {
+
+        valid = true;
+
+        showDashboard("adminDashboard");
+
+    }
+
+
+    if (!valid) {
+
+        document.getElementById("loginError").innerText =
+            "Invalid username, password or login type.";
+
+    }
+
+}
+
+
+/* SHOW DASHBOARD */
+
+function showDashboard(id) {
+
+    document.getElementById("loginPage").style.display =
+        "none";
+
+
+    document.querySelectorAll(".dashboard")
+        .forEach(function(dashboard) {
+
+            dashboard.style.display = "none";
+
+        });
+
+
+    document.getElementById(id).style.display =
+        "block";
+
+}
+
+
+/* SHOW PAGE */
+
+function showPage(id) {
+
+    let pages =
+        document.querySelectorAll(".page");
+
+    pages.forEach(function(page) {
+
+        page.classList.remove("active");
+
+    });
+
+
+    document.getElementById(id)
+        .classList.add("active");
+
+}
+
+
+/* LOGOUT */
+
+function logout() {
+
+    document.querySelectorAll(".dashboard")
+        .forEach(function(dashboard) {
+
+            dashboard.style.display = "none";
+
+        });
+
+
+    document.getElementById("loginPage")
+        .style.display = "block";
+
+
+    document.getElementById("username").value = "";
+
+    document.getElementById("password").value = "";
+
+    document.getElementById("loginType").value = "";
+
+}
+
+
+/* CREATE CASE */
+
+function createTrafficCase(event) {
+
+    event.preventDefault();
+
+
+    let owner =
+        document.getElementById("ownerName").value;
+
+    let vehicle =
+        document.getElementById("caseVehicle").value;
+
+    let violation =
+        document.getElementById("violation").value;
+
+    let fine =
+        document.getElementById("fine").value;
+
+
+    document.getElementById("caseMessage").innerHTML =
+
+        "✓ Case created successfully! " +
+
+        "Owner: " + owner +
+
+        " | Vehicle: " + vehicle +
+
+        " | Violation: " + violation +
+
+        " | Fine: ₹" + fine;
+
+}
+
+
+/* GOOGLE MAPS */
+
+function openMap() {
+
+    window.open(
+        "https://www.google.com/maps",
+        "_blank"
+    );
+
+}
+
+</script>
+
+</body>
+</html>
